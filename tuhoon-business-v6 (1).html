@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuhoon Business Portal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#3AAFA9;--teal-d:#2B9C96;--teal-l:#E1F5EE;
+  --purple:#7B6FD0;--purple-l:#EEEDFE;
+  --txt:#1a1a2e;--txt2:#6B7280;--txt3:#9CA3AF;
+  --bg:#F5F7FA;--bdr:#E5E7EB;--r:12px;--rs:8px;
+  --sb-w:230px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg)}
+#app{width:100%;min-height:100vh}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#E8F7F5;padding:20px}
+.lcard{background:#fff;border-radius:16px;padding:36px 28px;width:100%;max-width:400px}
+.llogo{text-align:center;margin-bottom:20px}
+.llogo-t{font-size:30px;font-weight:700;color:var(--teal)}
+.llogo-s{font-size:12px;color:var(--txt2);margin-top:2px}
+.ltitle{font-size:20px;font-weight:700;color:var(--txt);text-align:center;margin-bottom:4px}
+.lsub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:24px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:13px;font-weight:500;color:var(--txt);margin-bottom:5px}
+.fg input{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:14px;outline:none}
+.fg input:focus{border-color:var(--teal)}
+.forgot{display:block;font-size:13px;color:var(--teal);margin-bottom:18px;cursor:pointer}
+.btn-login{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:460px}
+.modal-title{font-size:17px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--txt2);margin-bottom:20px}
+.modal-fg{margin-bottom:14px}
+.modal-fg label{display:block;font-size:12px;font-weight:500;color:var(--txt);margin-bottom:5px}
+.modal-fg input,.modal-fg select,.modal-fg textarea{width:100%;padding:10px 13px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;outline:none;background:#fff}
+.modal-fg input:focus,.modal-fg select:focus{border-color:var(--teal)}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.modal-row{grid-template-columns:1fr}}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{padding:9px 20px;background:#fff;color:var(--txt2);border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;cursor:pointer}
+.btn-confirm{padding:9px 20px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer}
+
+/* SHELL */
+#dashboard{display:none;min-height:100vh;position:relative}
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99}
+#sb-overlay.show{display:block}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:0;height:100vh;width:var(--sb-w);background:linear-gradient(160deg,#1a1a2e 0%,#2d2b55 50%,#1a3a3a 100%);display:flex;flex-direction:column;z-index:100;transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);will-change:transform}
+@media(max-width:768px){.sb{transform:translateX(calc(-1 * var(--sb-w)))}.sb.open{transform:translateX(0)}.main{margin-left:0!important}}
+@media(min-width:769px){.sb.collapsed{transform:translateX(calc(-1 * var(--sb-w)))}.main{margin-left:var(--sb-w);transition:margin-left 0.28s cubic-bezier(0.4,0,0.2,1)}.main.sb-collapsed{margin-left:0}}
+.sb-logo{padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sb-logo-row{display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:34px;height:34px;border-radius:9px;background:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.sb-logo-name{font-size:17px;font-weight:700;color:#fff}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
+.sb-section{padding:14px 14px 4px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase}
+.sb-nav{flex:1;padding:8px 10px;overflow-y:auto}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);color:rgba(255,255,255,0.55);font-size:13.5px;cursor:pointer;margin-bottom:1px;transition:all 0.15s;user-select:none;-webkit-tap-highlight-color:transparent}
+.ni:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9)}
+.ni.active{background:rgba(58,175,169,0.2);color:#fff}
+.ni.active .ni-icon{color:var(--teal)}
+.ni-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ni-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ni-badge{margin-left:auto;background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px}
+.sb-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,0.07)}
+.sb-user{display:flex;align-items:center;gap:10px}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-email{font-size:12px;color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-org{font-size:10px;color:rgba(255,255,255,0.35)}
+.sb-logout{margin-left:auto;cursor:pointer;opacity:0.5;flex-shrink:0;padding:4px}
+.sb-logout:hover{opacity:0.9}
+.sb-logout svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
+
+/* MAIN */
+.main{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid var(--bdr);padding:0 20px;height:56px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50}
+.burger{width:36px;height:36px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:var(--rs);flex-shrink:0;padding:0}
+.burger:hover{background:var(--bg)}
+.burger span{display:block;width:18px;height:2px;background:var(--txt2);border-radius:2px}
+.topbar-title-wrap{flex:1;min-width:0}
+.topbar-title{font-size:16px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-sub{font-size:11px;color:var(--txt2);margin-top:1px;display:none}
+@media(min-width:769px){.topbar-sub{display:block}}
+.topbar-r{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn-exp{padding:7px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
+#cf-wrap{display:none}
+#cf-wrap.show{display:flex}
+.cfilters{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:12px 20px 0;scrollbar-width:none}
+.cfilters::-webkit-scrollbar{display:none}
+.fb{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--bdr);background:#fff;cursor:pointer;color:var(--txt2);white-space:nowrap;flex-shrink:0}
+.fb.active{background:var(--teal);border-color:var(--teal);color:#fff}
+.content{padding:16px 20px 32px;flex:1}
+.view{display:none}
+.view.active{display:block}
+
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media(min-width:900px){.kgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kc{background:#fff;border-radius:var(--r);padding:16px 18px;border:1px solid var(--bdr);position:relative;overflow:hidden}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kc.tl::before{background:var(--teal)}.kc.pu::before{background:var(--purple)}
+.kc.gr::before{background:#10B981}.kc.am::before{background:#F59E0B}
+.kc.pk::before{background:#EC4899}.kc.bl::before{background:#3B82F6}
+.kl{font-size:10px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px}
+.kv{font-size:24px;font-weight:700;color:var(--txt);line-height:1}
+.ks{font-size:11px;color:var(--txt2);margin-top:4px}
+.kch{font-size:11px;margin-top:4px;font-weight:500}
+.kch.up{color:#10B981}.kch.dn{color:#EF4444}
+
+/* CHART ROWS */
+.crow{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+@media(min-width:769px){.crow{grid-template-columns:1fr 1fr}}
+.cc{background:#fff;border-radius:var(--r);padding:16px 18px;border:1px solid var(--bdr)}
+.ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.ct{font-size:13px;font-weight:600;color:var(--txt)}
+.cs{font-size:11px;color:var(--txt2);margin-top:2px}
+
+/* MOOD */
+.mrow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.mlbl{font-size:12px;width:56px}
+.mbw{flex:1;height:7px;background:#F3F4F6;border-radius:4px;overflow:hidden}
+.mb{height:100%;border-radius:4px}
+.mp{font-size:12px;font-weight:500;color:var(--txt);width:32px;text-align:right}
+.orow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.on2{font-size:12px;color:var(--txt);flex:1}
+.obw{width:80px;height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden}
+.ob{height:100%;border-radius:3px}
+.op{font-size:11px;color:var(--txt2);width:34px;text-align:right}
+
+/* SEATS */
+.sdw{position:relative;width:120px;height:120px;margin:4px auto 12px}
+.sc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sp{font-size:20px;font-weight:700;color:var(--txt)}
+.spl{font-size:10px;color:var(--txt2)}
+.sleg{display:flex;justify-content:center;gap:16px}
+.sli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt2)}
+.sdt{width:8px;height:8px;border-radius:50%}
+
+/* TITLE LIST */
+.trow2{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.trk{font-size:11px;font-weight:700;color:var(--txt3);width:16px}
+.tn{font-size:12px;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbw{width:70px;height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;flex-shrink:0}
+.tbar{height:100%;background:var(--teal);border-radius:3px}
+.tv{font-size:11px;color:var(--txt2);width:22px;text-align:right;flex-shrink:0}
+
+/* CONTENT TYPE BARS */
+.seg-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.seg-row:last-child{margin-bottom:0}
+.seg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.seg-label{font-size:12px;color:var(--txt2);width:64px;flex-shrink:0}
+.seg-track{flex:1;height:7px;background:#F3F4F6;border-radius:4px;overflow:hidden}
+.seg-fill{height:100%;border-radius:4px}
+.seg-pct{font-size:12px;font-weight:600;color:var(--txt);width:28px;text-align:right;flex-shrink:0}
+.seg-mins{font-size:10px;color:var(--txt2);width:54px;text-align:right;flex-shrink:0}
+
+/* USERS */
+.uh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.uc{font-size:13px;color:var(--txt2)}
+.si{padding:8px 14px 8px 32px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;outline:none;width:180px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 9px center}
+.btn-add{padding:8px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:13px;cursor:pointer}
+.tbl-wrap{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.dtbl-desktop{display:none}
+@media(min-width:600px){.dtbl-desktop{display:block}.user-cards{display:none!important}}
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl th{font-size:11px;color:var(--txt2);font-weight:500;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:left}
+.dtbl td{font-size:12px;color:var(--txt);padding:11px 14px;border-bottom:1px solid #F9FAFB}
+.dtbl tr:hover td{background:#FAFAFA}
+.badge{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.badge.act{background:#D1FAE5;color:#065F46}
+.badge.exp{background:#FEE2E2;color:#991B1B}
+.badge.pnd{background:#FEF3C7;color:#92400E}
+.pcell{display:flex;align-items:center;gap:6px}
+.mb2{width:50px;height:4px;background:#E5E7EB;border-radius:3px;overflow:hidden}
+.mf{height:100%;background:var(--teal);border-radius:3px}
+.user-cards{display:flex;flex-direction:column}
+@media(min-width:600px){.user-cards{display:none}}
+.ucard{padding:12px 14px;border-bottom:1px solid #F9FAFB}
+.ucard:last-child{border:none}
+.ucard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.ucard-name{font-size:13px;font-weight:600;color:var(--txt)}
+.ucard-email{font-size:11px;color:var(--txt2);margin-top:1px}
+.ucard-stats{display:flex;gap:16px;margin-bottom:8px}
+.ustat{font-size:10px;color:var(--txt2)}
+.ustat strong{display:block;font-size:13px;font-weight:600;color:var(--txt)}
+.ubar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:3px}
+.ubar-track{height:4px;background:#E5E7EB;border-radius:3px;overflow:hidden}
+.ubar-fill{height:100%;background:var(--teal);border-radius:3px}
+
+/* PATHWAY / PROGRAM CARDS */
+.pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pcard{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color 0.15s;-webkit-tap-highlight-color:transparent}
+.pcard:hover{border-color:var(--teal)}
+.phdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.picon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.picon svg{width:20px;height:20px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ptitle2{font-size:13px;font-weight:600;color:var(--txt)}
+.pdesc2{font-size:11px;color:var(--txt2);margin-top:2px}
+.pstats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.pst{font-size:10px;color:var(--txt2)}
+.pst strong{display:block;font-size:14px;font-weight:700;color:var(--txt)}
+.pprog{height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;margin-top:2px}
+.pfill{height:100%;border-radius:3px;background:var(--teal)}
+.ptog-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.ptog-lbl{font-size:10px;color:var(--txt2)}
+.tog2{width:32px;height:18px;border-radius:9px;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;padding:2px;flex-shrink:0}
+.tog2.on{background:var(--teal);justify-content:flex-end}
+.tog2.off{background:#D1D5DB;justify-content:flex-start}
+.tth{width:14px;height:14px;border-radius:50%;background:#fff}
+
+/* BACK BTN */
+.back-btn{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--teal);font-size:13px;font-weight:500;margin-bottom:14px;width:fit-content}
+.back-btn svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-width:2.5;stroke-linecap:round}
+
+/* DETAIL HERO */
+.detail-hero{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.hero-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.hero-icon{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-icon svg{width:26px;height:26px;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hero-title{font-size:17px;font-weight:700;color:var(--txt)}
+.hero-meta{font-size:12px;color:var(--txt2);margin-top:3px}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(min-width:600px){.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat-box{background:var(--bg);border-radius:var(--rs);padding:12px 14px}
+.stat-lbl{font-size:10px;color:var(--txt2);margin-bottom:3px}
+.stat-val{font-size:18px;font-weight:700;color:var(--txt)}
+
+/* PATHWAY DAYS */
+.day-row{border:1px solid var(--bdr);border-radius:var(--rs);margin-bottom:8px;overflow:hidden}
+.day-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:#fff}
+.day-num{width:26px;height:26px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0F6E56;flex-shrink:0}
+.day-title{font-size:12px;font-weight:500;color:var(--txt);flex:1}
+.day-pct{font-size:10px;color:var(--txt2);white-space:nowrap}
+.day-chev{width:14px;height:14px;stroke:var(--txt3);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;transition:transform 0.2s}
+.day-chev.open{transform:rotate(90deg)}
+.day-tasks{display:none;padding:0 14px 10px;background:#FAFAFA}
+.day-tasks.open{display:block}
+.task-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.task-row:last-child{border:none}
+.task-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-icon svg{width:12px;height:12px;stroke-width:2;stroke-linecap:round}
+.task-name{font-size:12px;color:var(--txt);flex:1}
+.task-dur{font-size:10px;color:var(--txt2);white-space:nowrap}
+.task-chk{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-chk.done{background:var(--teal);border-color:var(--teal)}
+.task-chk.done svg{width:8px;height:8px;stroke:#fff;fill:none;stroke-width:2.5}
+
+/* PROGRAM MODULES */
+.mod-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F9FAFB}
+.mod-row:last-child{border:none}
+.mod-num{font-size:11px;font-weight:700;color:var(--txt3);width:20px;text-align:center;flex-shrink:0}
+.mod-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-icon svg{width:15px;height:15px;stroke-width:2;stroke-linecap:round}
+.mod-info{flex:1;min-width:0}
+.mod-title{font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod-meta{font-size:10px;color:var(--txt2);margin-top:1px}
+.mod-play{width:30px;height:30px;border-radius:50%;background:var(--teal);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.mod-play svg{width:10px;height:10px;fill:#fff;stroke:none}
+.mod-play.playing{background:#EF4444}
+
+/* PLAYER BAR */
+.player-bar{background:linear-gradient(135deg,#1a1a2e,#2d2b55);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:none}
+.player-bar.active{display:block}
+.pb-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pb-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pb-title{font-size:12px;font-weight:500;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-type{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;flex-shrink:0}
+.pb-type.audio{background:rgba(58,175,169,0.25);color:#5DCAA5}
+.pb-type.video{background:rgba(123,111,208,0.25);color:#AFA9EC}
+.pb-close{cursor:pointer;opacity:0.6;padding:4px;flex-shrink:0}
+.pb-close svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.pb-controls{display:flex;align-items:center;gap:10px}
+.pb-btn{width:30px;height:30px;border-radius:50%;background:var(--teal);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.pb-btn svg{width:11px;height:11px;fill:#fff;stroke:none}
+.pb-progress{flex:1;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;cursor:pointer}
+.pb-fill{height:100%;background:var(--teal);border-radius:2px;width:0%;transition:width 0.5s linear}
+.pb-time{font-size:10px;color:rgba(255,255,255,0.6);white-space:nowrap;flex-shrink:0}
+
+/* LIBRARY */
+.ltabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:14px}
+.lt{padding:9px 16px;font-size:13px;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.lt.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:500}
+.lib-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(min-width:900px){.lib-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ccard{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;transition:border-color 0.15s}
+.ccard:hover{border-color:var(--teal)}
+.cthumb{height:80px;display:flex;align-items:center;justify-content:center;position:relative}
+.cthumb svg{width:32px;height:32px;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.cbody{padding:10px 12px}
+.ctitle{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmeta{font-size:10px;color:var(--txt2)}
+.ctags{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.ctag{padding:2px 6px;border-radius:4px;font-size:9px}
+.ctag.tl{background:var(--teal-l);color:#0F6E56}
+.ctag.pu{background:var(--purple-l);color:#534AB7}
+.ctag.gr{background:#EAF3DE;color:#3B6D11}
+.ctag.am{background:#FAEEDA;color:#854F0B}
+.ccard-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--bdr)}
+.cplay{width:28px;height:28px;border-radius:50%;background:var(--teal);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.cplay svg{width:9px;height:9px;fill:#fff;stroke:none}
+.cplay.playing{background:#EF4444}
+
+/* TEAM */
+.team-list{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.team-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #F9FAFB}
+.team-row:last-child{border:none}
+.team-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.team-name{font-size:12px;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.team-role{font-size:10px;color:var(--txt2)}
+
+/* SUPPORT */
+.scard{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:22px;max-width:560px}
+.stitle{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.ssub{font-size:13px;color:var(--txt2);margin-bottom:18px}
+.slbl{font-size:12px;font-weight:500;color:var(--txt);display:block;margin-bottom:5px}
+.sinput{width:100%;padding:10px 13px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;outline:none;margin-bottom:12px}
+.sinput:focus{border-color:var(--teal)}
+.starea{width:100%;padding:10px 13px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;outline:none;height:88px;resize:none;margin-bottom:14px}
+.ssel{width:100%;padding:10px 13px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:13px;background:#fff;margin-bottom:12px}
+.btn-send{padding:10px 24px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;float:right}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.frow2{grid-template-columns:1fr}}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-size:15px;font-weight:700;color:var(--txt)}
+.sec-sub{font-size:12px;color:var(--txt2);margin-top:2px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;display:none;white-space:nowrap;border-left:3px solid var(--teal)}
+</style>
+</head>
+<body>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-export">
+  <div class="modal-box">
+    <div class="modal-title">Export dashboard</div>
+    <div class="modal-sub">Choose your export format and date range.</div>
+    <div class="modal-fg"><label>Format</label><select><option>PDF report</option><option>Excel (.xlsx)</option><option>CSV data</option></select></div>
+    <div class="modal-row">
+      <div class="modal-fg"><label>From date</label><input type="date" value="2026-04-01"></div>
+      <div class="modal-fg"><label>To date</label><input type="date" value="2026-04-18"></div>
+    </div>
+    <div class="modal-fg"><label>Include sections</label><select><option>All sections</option><option>Analytics only</option><option>Users only</option><option>Content only</option></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-export')">Cancel</button>
+      <button class="btn-confirm" onclick="closeModal('modal-export');showToast('Export queued — you\'ll receive it by email.')">Export</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-invite">
+  <div class="modal-box">
+    <div class="modal-title">Invite team member</div>
+    <div class="modal-sub">They'll receive an email invite to access this portal.</div>
+    <div class="modal-row">
+      <div class="modal-fg"><label>First name</label><input type="text" placeholder="Sara"></div>
+      <div class="modal-fg"><label>Last name</label><input type="text" placeholder="Al-Rashidi"></div>
+    </div>
+    <div class="modal-fg"><label>Work email</label><input type="email" placeholder="sara@acmecorp.com"></div>
+    <div class="modal-fg"><label>Role</label><select><option>Admin</option><option>Read only</option></select></div>
+    <div class="modal-fg"><label>Country / region</label><select><option>Saudi Arabia</option><option>Iraq</option><option>Jordan</option><option>Sudan</option><option>Bahrain</option><option>Kuwait</option><option>Other</option></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-invite')">Cancel</button>
+      <button class="btn-confirm" onclick="closeModal('modal-invite');showToast('Invitation sent successfully.')">Send invite</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal-box">
+    <div class="modal-title">Add new user</div>
+    <div class="modal-sub">Add a community member and assign them a seat.</div>
+    <div class="modal-row">
+      <div class="modal-fg"><label>First name</label><input type="text" placeholder="Ahmad"></div>
+      <div class="modal-fg"><label>Last name</label><input type="text" placeholder="Hassan"></div>
+    </div>
+    <div class="modal-fg"><label>Email address</label><input type="email" placeholder="ahmad@acmecorp.com"></div>
+    <div class="modal-fg"><label>Phone number</label><input type="tel" placeholder="+966 5x xxx xxxx"></div>
+    <div class="modal-row">
+      <div class="modal-fg"><label>Country</label><select><option>Saudi Arabia</option><option>Iraq</option><option>Jordan</option><option>Sudan</option><option>Bahrain</option><option>Kuwait</option><option>Other</option></select></div>
+      <div class="modal-fg"><label>Gender</label><select><option>Male</option><option>Female</option><option>Prefer not to say</option></select></div>
+    </div>
+    <div class="modal-fg"><label>Assign pathway (optional)</label><select><option>— None —</option><option>Stress relief in 21 days</option><option>Better sleep in 14 days</option><option>Focus &amp; productivity boost</option><option>Building resilience</option></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-add-user')">Cancel</button>
+      <button class="btn-confirm" onclick="closeModal('modal-add-user');showToast('User added and seat assigned.')">Add user</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+<div id="login-screen">
+  <div class="lcard">
+    <div class="llogo"><div class="llogo-t">تهون</div><div class="llogo-s">Business portal</div></div>
+    <div class="ltitle">Log in to your account</div>
+    <div class="lsub">Welcome back! Please enter your details.</div>
+    <div class="fg"><label>Email</label><input type="email" value="hr.admin@acmecorp.com" autocomplete="email"></div>
+    <div class="fg"><label>Password</label><input type="password" value="password"></div>
+    <a class="forgot">Forgot password</a>
+    <button class="btn-login" onclick="doLogin()">Sign in</button>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div id="sb-overlay" onclick="closeSb()"></div>
+  <div class="sb" id="sidebar">
+    <div class="sb-logo"><div class="sb-logo-row"><div class="sb-logo-icon">
+<svg width="100" height="33" viewBox="0 0 100 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M97.5526 5.432C98.9044 5.432 100 4.33625 100 2.98443C100 1.63261 98.9044 0.536865 97.5526 0.536865C96.2007 0.536865 95.105 1.63261 95.105 2.98443C95.105 4.33625 96.2007 5.432 97.5526 5.432Z" fill="white"/>
+<path d="M90.9212 5.432C92.273 5.432 93.3688 4.33619 93.3688 2.98443C93.3688 1.63268 92.273 0.536865 90.9212 0.536865C89.5694 0.536865 88.4736 1.63268 88.4736 2.98443C88.4736 4.33619 89.5694 5.432 90.9212 5.432Z" fill="white"/>
+<path d="M14.2847 11.4805C15.4916 11.4805 16.4702 10.5018 16.4702 9.29491C16.4702 8.088 15.4916 7.10938 14.2847 7.10938C13.0777 7.10938 12.0991 8.088 12.0991 9.29491C12.0991 10.5018 13.0777 11.4805 14.2847 11.4805Z" fill="white"/>
+<path d="M98.1535 10.8662C97.2315 10.8662 96.4851 11.6135 96.4851 12.5346V21.8842L77.2857 21.9735C79.7789 19.655 81.3421 16.3509 81.3421 12.6865C81.3421 5.69114 75.651 0 68.6557 0C64.0792 0 59.8401 2.48231 57.594 6.47722C57.5434 6.56754 57.5027 6.66084 57.4709 6.75612C53.8016 8.10794 51.1773 11.6393 51.1773 15.7722C51.1773 18.1652 52.0587 20.3537 53.5118 22.037H49.5714C49.5714 22.0301 49.5704 22.0231 49.5704 22.0162V15.9618C49.5704 10.7868 45.3601 6.57647 40.1851 6.57647C35.0101 6.57647 30.7998 10.7868 30.7998 15.9618C30.7998 21.1368 35.0101 25.3471 40.1851 25.3471H40.726C40.8233 25.365 40.9226 25.3749 41.0258 25.3749H45.3979C44.2177 27.5505 41.9131 29.0314 39.269 29.0314H34.229C33.3069 29.0314 32.5605 29.7787 32.5605 30.6998C32.5605 31.6209 33.3079 32.3682 34.229 32.3682H39.269C43.7929 32.3682 47.643 29.4363 49.0255 25.3739L60.7066 25.3729C60.7324 25.3729 60.7572 25.3749 60.783 25.3749H68.7182C68.7758 25.3749 68.8314 25.3719 68.887 25.366C69.0974 25.362 69.3068 25.354 69.5142 25.3392C69.5579 25.3431 69.6026 25.3461 69.6472 25.3461C69.6502 25.3461 69.6522 25.3461 69.6552 25.3461L98.1615 25.2131C99.0806 25.2091 99.823 24.4628 99.823 23.5447V12.5346C99.822 11.6135 99.0746 10.8662 98.1535 10.8662ZM68.6557 3.33786C73.8109 3.33786 78.0043 7.53128 78.0043 12.6865C78.0043 17.2501 74.717 21.0584 70.3857 21.8723V15.7712C70.3857 10.8543 66.6706 6.78986 61.9006 6.23405C63.6425 4.41177 66.0751 3.33786 68.6557 3.33786ZM54.5142 15.7712C54.5142 12.3162 57.325 9.50442 60.781 9.50442C64.237 9.50442 67.0478 12.3162 67.0478 15.7712V22.035L60.7056 22.036C57.2843 21.9953 54.5142 19.2014 54.5142 15.7712ZM34.1367 15.9618C34.1367 12.6269 36.8492 9.91334 40.1841 9.91334C43.519 9.91334 46.2316 12.6259 46.2316 15.9618V22.0092H40.1841C36.8492 22.0102 34.1367 19.2967 34.1367 15.9618Z" fill="white"/>
+<path d="M26.9004 10.8898C25.9784 10.8898 25.232 11.6372 25.232 12.5583V19.0782C25.232 20.833 24.7436 22.4964 23.8196 23.8889L23.7561 23.9822C20.5224 28.7563 14.2159 30.3721 9.08657 27.7429C7.30498 26.8298 5.79238 25.474 4.71152 23.8224C3.81229 22.4488 3.33687 20.8062 3.33687 19.0712V12.4551C3.33687 11.533 2.5895 10.7866 1.66843 10.7866C0.747371 10.7866 0 11.534 0 12.4551V19.0712C0 21.4563 0.663999 23.7311 1.91954 25.6497C3.31702 27.7846 5.26932 29.5354 7.56503 30.7116C9.7069 31.8103 12.0066 32.3343 14.2814 32.3343C19.0446 32.3343 23.6916 30.0297 26.5163 25.8591L26.6017 25.7321C27.89 23.7907 28.5708 21.489 28.5708 19.0752V12.5553C28.5688 11.6372 27.8215 10.8898 26.9004 10.8898Z" fill="white"/>
+</svg>
+</div><div><div class="sb-logo-name">تهون</div><div class="sb-logo-sub">Business portal</div></div></div></div>
+    <div class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <div class="ni active" onclick="showView('analytics',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"></svg></span>Dashboard</div>
+      <div class="ni" onclick="showView('users',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Users<span class="ni-badge">721</span></div>
+      <div class="sb-section">Content</div>
+      <div class="ni" onclick="showView('pathways',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M15 6l3 6-3 6"/></svg></span>Pathways</div>
+      <div class="ni" onclick="showView('programs',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg></span>Programs</div>
+      <div class="ni" onclick="showView('library',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Content library</div>
+      <div class="sb-section">Account</div>
+      <div class="ni" onclick="showView('team',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Team &amp; access</div>
+      <div class="ni" onclick="showView('support',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Support</div>
+    </div>
+    <div class="sb-footer"><div class="sb-user"><div class="sb-avatar">AC</div><div style="flex:1;min-width:0"><div class="sb-email">hr.admin@acmecorp.com</div><div class="sb-org">Acme Corp</div></div><div class="sb-logout" onclick="doLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div></div></div>
+  </div>
+
+  <div class="main" id="main">
+    <div class="topbar">
+      <button class="burger" onclick="toggleSb()"><span></span><span></span><span></span></button>
+      <div class="topbar-title-wrap"><div class="topbar-title" id="page-title">Analytics overview</div><div class="topbar-sub" id="page-sub">Track and manage community wellbeing engagement</div></div>
+      <div class="topbar-r"><button class="btn-exp" onclick="openModal('modal-export')">Export</button></div>
+    </div>
+    <div id="cf-wrap" class="show"><div class="cfilters">
+      <div class="fb active" onclick="setFilter(this)">All</div>
+      <div class="fb" onclick="setFilter(this)">Iraq</div>
+      <div class="fb" onclick="setFilter(this)">Saudi Arabia</div>
+      <div class="fb" onclick="setFilter(this)">Sudan</div>
+      <div class="fb" onclick="setFilter(this)">Jordan</div>
+      <div class="fb" onclick="setFilter(this)">Bahrain</div>
+      <div class="fb" onclick="setFilter(this)">Kuwait</div>
+      <div class="fb" onclick="setFilter(this)">Others</div>
+    </div></div>
+
+    <div class="content">
+
+      <!-- ANALYTICS -->
+      <div id="view-analytics" class="view active">
+        <div class="kgrid">
+          <div class="kc tl"><div class="kl">Active seats</div><div class="kv">721</div><div class="ks">of 1,500 allocated</div><div class="kch up">↑ +42 this month</div></div>
+          <div class="kc pu"><div class="kl">Avg. mood score</div><div class="kv">7.4<span style="font-size:13px;color:var(--txt2)">/10</span></div><div class="ks">Community happiness</div><div class="kch up">↑ +0.3 vs last week</div></div>
+          <div class="kc gr"><div class="kl">Avg. listening</div><div class="kv">25.2<span style="font-size:13px;color:var(--txt2)">min</span></div><div class="ks">Per user per day</div><div class="kch up">↑ +1.8 min</div></div>
+          <div class="kc am"><div class="kl">Pathway completion</div><div class="kv">64<span style="font-size:13px;color:var(--txt2)">%</span></div><div class="ks">Avg. active users</div><div class="kch dn">↓ -2% vs last week</div></div>
+          <div class="kc pk"><div class="kl">7-day retention</div><div class="kv">81<span style="font-size:13px;color:var(--txt2)">%</span></div><div class="ks">Users active 5+ days</div><div class="kch up">↑ +3% vs last week</div></div>
+          <div class="kc bl"><div class="kl">Streak leaders</div><div class="kv">134</div><div class="ks">Users on 7+ day streak</div><div class="kch up">↑ +18 this week</div></div>
+          <div class="kc tl"><div class="kl">Journal entries</div><div class="kv">2,841</div><div class="ks">This week across community</div><div class="kch up">↑ +12% vs last week</div></div>
+          <div class="kc pu"><div class="kl">Modules completed</div><div class="kv">9,320</div><div class="ks">This week across community</div><div class="kch up">↑ +8% vs last week</div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc"><div class="ch"><div><div class="ct">Average listening time</div><div class="cs">Minutes per user · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-listen" role="img" aria-label="Listening trend">23-29 min range.</canvas></div></div>
+          <div class="cc"><div class="ch"><div><div class="ct">Mood trend</div><div class="cs">Community avg. · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-mood" role="img" aria-label="Mood trend">6.9-7.6.</canvas></div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Today's mood distribution</div><div class="cs">Across active community</div></div></div>
+            <div class="mrow" style="margin-top:4px"><div class="mlbl" style="color:#10B981;font-weight:600;font-size:11px">😊 High</div><div class="mbw"><div class="mb" style="background:#10B981;width:58%"></div></div><div class="mp">58%</div></div>
+            <div class="mrow"><div class="mlbl" style="color:#F59E0B;font-weight:600;font-size:11px">😐 Mid</div><div class="mbw"><div class="mb" style="background:#F59E0B;width:30%"></div></div><div class="mp">30%</div></div>
+            <div class="mrow"><div class="mlbl" style="color:#EF4444;font-weight:600;font-size:11px">😔 Low</div><div class="mbw"><div class="mb" style="background:#EF4444;width:12%"></div></div><div class="mp">12%</div></div>
+            <div style="margin-top:14px"><div class="ct" style="margin-bottom:10px">Top user objectives</div>
+              <div class="orow"><div class="on2">Reduce stress</div><div class="obw"><div class="ob" style="background:var(--teal);width:82%"></div></div><div class="op">26.5%</div></div>
+              <div class="orow"><div class="on2">Improve sleep</div><div class="obw"><div class="ob" style="background:var(--purple);width:66%"></div></div><div class="op">21.5%</div></div>
+              <div class="orow"><div class="on2">Productivity</div><div class="obw"><div class="ob" style="background:#F59E0B;width:72%"></div></div><div class="op">23.4%</div></div>
+              <div class="orow"><div class="on2">Be happy</div><div class="obw"><div class="ob" style="background:#10B981;width:71%"></div></div><div class="op">23.2%</div></div>
+              <div class="orow"><div class="on2">Positivity</div><div class="obw"><div class="ob" style="background:#EC4899;width:17%"></div></div><div class="op">5.5%</div></div>
+            </div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Seat utilisation</div><div class="cs">Active vs available</div></div></div>
+            <div class="sdw"><canvas id="chart-seats" role="img" aria-label="Seat donut">721/1500.</canvas><div class="sc"><div class="sp">48%</div><div class="spl">utilised</div></div></div>
+            <div class="sleg" style="margin-bottom:14px"><div class="sli"><div class="sdt" style="background:var(--teal)"></div>Active 721</div><div class="sli"><div class="sdt" style="background:#E5E7EB"></div>Available 779</div></div>
+            <div class="ct" style="margin-bottom:10px">Top streamed titles</div>
+            <div class="trow2"><div class="trk">#1</div><div class="tn">تعزيز الشعور بالثقة أمام الناس</div><div class="tbw"><div class="tbar" style="width:76%"></div></div><div class="tv">16</div></div>
+            <div class="trow2"><div class="trk">#2</div><div class="tn">Morning clarity meditation</div><div class="tbw"><div class="tbar" style="width:60%"></div></div><div class="tv">12</div></div>
+            <div class="trow2"><div class="trk">#3</div><div class="tn">Deep sleep audio journey</div><div class="tbw"><div class="tbar" style="width:45%"></div></div><div class="tv">9</div></div>
+            <div class="trow2"><div class="trk">#4</div><div class="tn">التحف على التشويف</div><div class="tbw"><div class="tbar" style="width:24%"></div></div><div class="tv">5</div></div>
+          </div>
+        </div>
+
+        <div class="crow">
+          <div class="cc"><div class="ch"><div><div class="ct">Daily engagement</div><div class="cs">Total listening minutes · last 7 days</div></div></div><div style="position:relative;height:160px"><canvas id="chart-daily" role="img" aria-label="Daily engagement">Apr 12-18.</canvas></div></div>
+          <div class="cc"><div class="ch"><div><div class="ct">Hourly activity pattern</div><div class="cs">Today · listening minutes per hour</div></div></div><div style="position:relative;height:160px"><canvas id="chart-hourly" role="img" aria-label="Hourly pattern">Morning and evening peaks.</canvas></div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Weekly active users</div><div class="cs">Unique users who engaged · last 8 weeks</div></div></div>
+            <div style="position:relative;height:160px"><canvas id="chart-wau" role="img" aria-label="Weekly active users">Growing trend 524 to 697.</canvas></div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Content type engagement</div><div class="cs">Share of total listening minutes this week</div></div></div>
+            <div style="margin-top:6px">
+              <div class="seg-row"><div class="seg-dot" style="background:#3AAFA9"></div><div class="seg-label">Audio</div><div class="seg-track"><div class="seg-fill" style="background:#3AAFA9;width:61%"></div></div><div class="seg-pct">61%</div><div class="seg-mins">11,042 min</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Video</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:27%"></div></div><div class="seg-pct">27%</div><div class="seg-mins">4,886 min</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#F59E0B"></div><div class="seg-label">Journaling</div><div class="seg-track"><div class="seg-fill" style="background:#F59E0B;width:12%"></div></div><div class="seg-pct">12%</div><div class="seg-mins">2,172 min</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="view-users" class="view">
+        <div class="uh"><div class="uc">721 active · 1,500 total seats</div><div style="display:flex;gap:8px"><input class="si" type="search" placeholder="Search users"><button class="btn-add" onclick="openModal('modal-add-user')">+ Add new</button></div></div>
+        <div class="tbl-wrap">
+          <div class="dtbl-desktop"><table class="dtbl">
+            <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Joined</th><th>Listening</th><th>Pathways</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Mohammad A.</td><td>m.ali@acmecorp.com</td><td>Iraq</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:90%"></div></div>26min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:60%"></div></div>2/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>Mawada E.</td><td>m.elawad@acmecorp.com</td><td>Sudan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:96%"></div></div>28min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>Abdulaziz A.</td><td>a.aleisa@acmecorp.com</td><td>Saudi Arabia</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:83%"></div></div>24min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>Randa S.</td><td>r.saleh@acmecorp.com</td><td>Jordan</td><td>03/04/23</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0/3</div></td><td><span class="badge exp">Expired</span></td></tr>
+              <tr><td>Sara N.</td><td>s.neimat@acmecorp.com</td><td>Jordan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>30min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>Helen O.</td><td>h.osama@acmecorp.com</td><td>Sudan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:55%"></div></div>16min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge pnd">Pending</span></td></tr>
+            </tbody>
+          </table></div>
+          <div class="user-cards">
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Mohammad A.</div><div class="ucard-email">m.ali@acmecorp.com · Iraq</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>26min</strong>listening/day</div><div class="ustat"><strong>2/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>87%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:87%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Mawada E.</div><div class="ucard-email">m.elawad@acmecorp.com · Sudan</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>28min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Abdulaziz A.</div><div class="ucard-email">a.aleisa@acmecorp.com · S. Arabia</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>24min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>72%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:72%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Randa S.</div><div class="ucard-email">r.saleh@acmecorp.com · Jordan</div></div><span class="badge exp">Expired</span></div><div class="ucard-stats"><div class="ustat"><strong>0min</strong>listening/day</div><div class="ustat"><strong>0/3</strong>pathways</div><div class="ustat"><strong>Apr 23</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>0%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:0%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Sara N.</div><div class="ucard-email">s.neimat@acmecorp.com · Jordan</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>30min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Helen O.</div><div class="ucard-email">h.osama@acmecorp.com · Sudan</div></div><span class="badge pnd">Pending</span></div><div class="ucard-stats"><div class="ustat"><strong>16min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>41%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:41%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATHWAYS -->
+      <div id="view-pathways" class="view">
+        <div class="sec-hdr"><div><div class="sec-title">Pathways</div><div class="sec-sub">Click any pathway to view its day-by-day structure</div></div><div style="display:flex;border:1px solid var(--bdr);border-radius:var(--rs);overflow:hidden"><button style="padding:4px 10px;font-size:11px;cursor:pointer;background:var(--teal);border:none;color:#fff">Published</button><button style="padding:4px 10px;font-size:11px;cursor:pointer;background:#fff;border:none;color:var(--txt2)">All</button></div></div>
+        <div class="pgrid">
+          <div class="pcard" onclick="openPathway(0)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><path d="M12 22c4-4 8-8 8-12A8 8 0 0 0 4 10c0 4 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ptitle2">Stress relief in 21 days</div><div class="pdesc2">21 days · 63 tasks</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>487</strong>enrolled</div><div class="pst"><strong>68%</strong>completion</div><div class="pst"><strong>4.7★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:68%"></div></div></div>
+          <div class="pcard" onclick="openPathway(1)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></div><div><div class="ptitle2">Better sleep in 14 days</div><div class="pdesc2">14 days · 42 tasks</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>312</strong>enrolled</div><div class="pst"><strong>74%</strong>completion</div><div class="pst"><strong>4.9★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:74%"></div></div></div>
+          <div class="pcard" onclick="openPathway(2)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#FEF3C7"><svg viewBox="0 0 24 24" fill="none" stroke="#854F0B"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div><div><div class="ptitle2">Focus &amp; productivity boost</div><div class="pdesc2">30 days · 90 tasks</div></div></div><div class="tog2 off" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>0</strong>enrolled</div><div class="pst"><strong>—</strong>completion</div><div class="pst"><strong>4.6★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:0%"></div></div></div>
+          <div class="pcard" onclick="openPathway(3)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#FCE7F3"><svg viewBox="0 0 24 24" fill="none" stroke="#993556"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div><div class="ptitle2">Building resilience</div><div class="pdesc2">28 days · 84 tasks</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>198</strong>enrolled</div><div class="pst"><strong>55%</strong>completion</div><div class="pst"><strong>4.5★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:55%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- PATHWAY DETAIL -->
+      <div id="view-pathway-detail" class="view">
+        <div class="back-btn" onclick="showView('pathways',document.querySelector('.ni[onclick*=pathways]'))"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>Back to pathways</div>
+        <div class="detail-hero">
+          <div class="hero-top"><div class="hero-icon" id="pd-icon"></div><div><div class="hero-title" id="pd-title"></div><div class="hero-meta" id="pd-meta"></div></div></div>
+          <div class="stat-grid"><div class="stat-box"><div class="stat-lbl">Enrolled users</div><div class="stat-val" id="pd-enrolled"></div></div><div class="stat-box"><div class="stat-lbl">Avg. completion</div><div class="stat-val" id="pd-completion"></div></div><div class="stat-box"><div class="stat-lbl">Avg. daily time</div><div class="stat-val" id="pd-time"></div></div><div class="stat-box"><div class="stat-lbl">Rating</div><div class="stat-val" id="pd-rating"></div></div></div>
+          <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px">Day-by-day structure <span style="font-size:11px;color:var(--txt2);font-weight:400">· Click a day to expand</span></div>
+          <div id="pd-days"></div>
+        </div>
+      </div>
+
+      <!-- PROGRAMS -->
+      <div id="view-programs" class="view">
+        <div class="sec-hdr"><div><div class="sec-title">Programs</div><div class="sec-sub">Click to view modules and preview content</div></div></div>
+        <div class="pgrid">
+          <div class="pcard" onclick="openProgram(0)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="ptitle2">Morning mindfulness series</div><div class="pdesc2">12 modules · 48 min total</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>543</strong>streams</div><div class="pst"><strong>82%</strong>completion</div><div class="pst"><strong>4.8★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:82%"></div></div></div>
+          <div class="pcard" onclick="openProgram(1)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></div><div><div class="ptitle2">Evening wind-down collection</div><div class="pdesc2">8 modules · 36 min total</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>421</strong>streams</div><div class="pst"><strong>71%</strong>completion</div><div class="pst"><strong>4.6★</strong>rating</div></div><div class="pprog"><div class="pfill" style="background:var(--purple);width:71%"></div></div></div>
+          <div class="pcard" onclick="openProgram(2)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#FEF3C7"><svg viewBox="0 0 24 24" fill="none" stroke="#854F0B"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="ptitle2">Workplace confidence</div><div class="pdesc2">16 modules · 64 min total</div></div></div><div class="tog2 off" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>0</strong>streams</div><div class="pst"><strong>—</strong>completion</div><div class="pst"><strong>4.4★</strong>rating</div></div><div class="pprog"><div class="pfill" style="width:0%"></div></div></div>
+          <div class="pcard" onclick="openProgram(3)"><div class="phdr"><div style="display:flex;align-items:center;gap:10px"><div class="picon" style="background:#D1FAE5"><svg viewBox="0 0 24 24" fill="none" stroke="#3B6D11"><path d="M17 8C8 10 5.9 16.17 3.82 19.31l1.96 1.18"/><path d="M3 3s.55 8 4 10.5c3.03 2.2 8 2 12 2"/></svg></div><div><div class="ptitle2">Nature &amp; calm soundscapes</div><div class="pdesc2">20 modules · 120 min total</div></div></div><div class="tog2 on" onclick="event.stopPropagation();toggleP(this)"><div class="tth"></div></div></div><div class="pstats"><div class="pst"><strong>289</strong>streams</div><div class="pst"><strong>60%</strong>completion</div><div class="pst"><strong>4.7★</strong>rating</div></div><div class="pprog"><div class="pfill" style="background:#10B981;width:60%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- PROGRAM DETAIL -->
+      <div id="view-program-detail" class="view">
+        <div class="back-btn" onclick="showView('programs',document.querySelector('.ni[onclick*=programs]'))"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>Back to programs</div>
+        <div class="detail-hero">
+          <div class="hero-top"><div class="hero-icon" id="prog-icon"></div><div><div class="hero-title" id="prog-title"></div><div class="hero-meta" id="prog-meta"></div></div></div>
+          <div class="stat-grid"><div class="stat-box"><div class="stat-lbl">Total streams</div><div class="stat-val" id="prog-streams"></div></div><div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-val" id="prog-completion"></div></div><div class="stat-box"><div class="stat-lbl">Total duration</div><div class="stat-val" id="prog-duration"></div></div><div class="stat-box"><div class="stat-lbl">Rating</div><div class="stat-val" id="prog-rating"></div></div></div>
+          <div id="prog-player-bar" class="player-bar">
+            <div class="pb-top"><div class="pb-icon" id="prog-pb-icon"></div><div class="pb-title" id="prog-pb-title">—</div><span class="pb-type" id="prog-pb-type"></span><div class="pb-close" onclick="stopProgPlayer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+            <div class="pb-controls"><button class="pb-btn" id="prog-pb-btn" onclick="toggleProgPlay()"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button><div class="pb-progress" onclick="seekProg(event)"><div class="pb-fill" id="prog-pb-fill"></div></div><div class="pb-time" id="prog-pb-time">0:00 / 0:00</div></div>
+          </div>
+          <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px">Modules <span style="font-size:11px;color:var(--txt2);font-weight:400">· Click ▶ to preview</span></div>
+          <div id="prog-modules"></div>
+        </div>
+      </div>
+
+      <!-- LIBRARY -->
+      <div id="view-library" class="view">
+        <div class="sec-hdr"><div><div class="sec-title">Content library</div><div class="sec-sub">Toggle to publish · click ▶ to preview</div></div></div>
+        <div id="lib-player-bar" class="player-bar">
+          <div class="pb-top"><div class="pb-icon" id="lib-pb-icon"></div><div class="pb-title" id="lib-pb-title">—</div><span class="pb-type" id="lib-pb-type"></span><div class="pb-close" onclick="stopLibPlayer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+          <div class="pb-controls"><button class="pb-btn" id="lib-pb-btn" onclick="toggleLibPlay()"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button><div class="pb-progress" onclick="seekLib(event)"><div class="pb-fill" id="lib-pb-fill"></div></div><div class="pb-time" id="lib-pb-time">0:00 / 0:00</div></div>
+        </div>
+        <div class="ltabs"><div class="lt active" onclick="setLibTab(this,'audio')">Audio modules</div><div class="lt" onclick="setLibTab(this,'video')">Video modules</div></div>
+        <div id="lib-audio" class="lib-grid">
+          <div class="ccard"><div class="cthumb" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">تعزيز الشعور بالثقة</div><div class="cmeta">Audio · 12 min · Arabic</div><div class="ctags"><span class="ctag tl">Confidence</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">12:00</span><button class="cplay" onclick="libPlay('audio','تعزيز الشعور بالثقة أمام الناس','12:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Deep sleep breathing</div><div class="cmeta">Audio · 18 min · English</div><div class="ctags"><span class="ctag pu">Sleep</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">18:00</span><button class="cplay" onclick="libPlay('audio','Deep sleep breathing technique','18:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EAF3DE"><svg viewBox="0 0 24 24" fill="none" stroke="#3B6D11"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 off" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Morning clarity meditation</div><div class="cmeta">Audio · 8 min · English</div><div class="ctags"><span class="ctag gr">Mindfulness</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">8:00</span><button class="cplay" onclick="libPlay('audio','Morning clarity meditation','8:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#FAEEDA"><svg viewBox="0 0 24 24" fill="none" stroke="#854F0B"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">التحف على التشويف</div><div class="cmeta">Audio · 10 min · Arabic</div><div class="ctags"><span class="ctag am">Motivation</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">10:00</span><button class="cplay" onclick="libPlay('audio','التحف على التشويف','10:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Anxiety release body scan</div><div class="cmeta">Audio · 15 min · English</div><div class="ctags"><span class="ctag tl">Anxiety</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">15:00</span><button class="cplay" onclick="libPlay('audio','Anxiety release body scan','15:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><div class="tog2 off" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Gratitude reflection</div><div class="cmeta">Audio · 7 min · English</div><div class="ctags"><span class="ctag pu">Gratitude</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">7:00</span><button class="cplay" onclick="libPlay('audio','Gratitude reflection practice','7:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+        </div>
+        <div id="lib-video" class="lib-grid" style="display:none">
+          <div class="ccard"><div class="cthumb" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Breathwork masterclass</div><div class="cmeta">Video · 22 min · English</div><div class="ctags"><span class="ctag tl">Breathing</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">22:00</span><button class="cplay" onclick="libPlay('video','Breathwork masterclass with Dr. Lina','22:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">مقدمة في التأمل اليومي</div><div class="cmeta">Video · 18 min · Arabic</div><div class="ctags"><span class="ctag pu">Meditation</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">18:00</span><button class="cplay" onclick="libPlay('video','مقدمة في التأمل اليومي','18:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EAF3DE"><svg viewBox="0 0 24 24" fill="none" stroke="#3B6D11"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Office yoga — desk flow</div><div class="cmeta">Video · 10 min · English</div><div class="ctags"><span class="ctag gr">Movement</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">10:00</span><button class="cplay" onclick="libPlay('video','Office yoga — 10-minute desk flow','10:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#FAEEDA"><svg viewBox="0 0 24 24" fill="none" stroke="#854F0B"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 off" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Managing burnout</div><div class="cmeta">Video · 28 min · English</div><div class="ctags"><span class="ctag am">Burnout</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">28:00</span><button class="cplay" onclick="libPlay('video','Managing burnout — signs & recovery','28:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 on" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">Sleep science explained</div><div class="cmeta">Video · 20 min · English</div><div class="ctags"><span class="ctag tl">Sleep</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">20:00</span><button class="cplay" onclick="libPlay('video','Sleep science explained','20:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="ccard"><div class="cthumb" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tog2 off" style="position:absolute;top:7px;right:7px" onclick="toggleP(this)"><div class="tth"></div></div></div><div class="cbody"><div class="ctitle">قوة الامتنان اليومية</div><div class="cmeta">Video · 15 min · Arabic</div><div class="ctags"><span class="ctag pu">Gratitude</span></div></div><div class="ccard-footer"><span style="font-size:11px;color:var(--txt2)">15:00</span><button class="cplay" onclick="libPlay('video','قوة الامتنان في حياتك اليومية','15:00',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+        </div>
+      </div>
+
+      <!-- TEAM -->
+      <div id="view-team" class="view">
+        <div class="sec-hdr"><div><div class="sec-title">Team &amp; access</div><div class="sec-sub">Manage portal roles and invitations</div></div><button class="btn-add" onclick="openModal('modal-invite')">+ Invite</button></div>
+        <div class="team-list">
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#3AAFA9,#0F6E56)">AK</div><div style="flex:1;min-width:0"><div class="team-name">amal.khan@acmecorp.com</div><div class="team-role">Admin</div></div><span class="badge pnd">Pending</span></div>
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#7B6FD0,#534AB7)">AA</div><div style="flex:1;min-width:0"><div class="team-name">abdalrahman.ayad@acmecorp.com</div><div class="team-role">Admin</div></div><span class="badge act">Registered</span></div>
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#F59E0B,#854F0B)">MB</div><div style="flex:1;min-width:0"><div class="team-name">mubarak.bol@acmecorp.com</div><div class="team-role">Admin</div></div><span class="badge pnd">Pending</span></div>
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#10B981,#3B6D11)">SA</div><div style="flex:1;min-width:0"><div class="team-name">sara.alrabab@acmecorp.com</div><div class="team-role">Read only</div></div><span class="badge act">Registered</span></div>
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#3AAFA9,#7B6FD0)">DE</div><div style="flex:1;min-width:0"><div class="team-name">dana.ezzeddine@acmecorp.com</div><div class="team-role">Admin</div></div><span class="badge act">Registered</span></div>
+          <div class="team-row"><div class="team-av" style="background:linear-gradient(135deg,#EC4899,#993556)">HR</div><div style="flex:1;min-width:0"><div class="team-name">hr.admin@acmecorp.com</div><div class="team-role">Admin · you</div></div><span class="badge act">Registered</span></div>
+        </div>
+      </div>
+
+      <!-- SUPPORT -->
+      <div id="view-support" class="view">
+        <div class="sec-hdr"><div><div class="sec-title">Support</div><div class="sec-sub">Get in touch with Tuhoon</div></div></div>
+        <div class="scard">
+          <div class="stitle">Contact us</div>
+          <div class="ssub">We'd love to hear from you. We usually respond within 24 hours.</div>
+          <div class="frow2"><div><label class="slbl">Name</label><input class="sinput" placeholder="Your name"></div><div><label class="slbl">Email</label><input class="sinput" value="hr.admin@acmecorp.com"></div></div>
+          <label class="slbl">Type of enquiry</label>
+          <select class="ssel"><option>Tech support</option><option>Billing</option><option>Content request</option><option>License renewal</option></select>
+          <label class="slbl">How can we help?</label>
+          <textarea class="starea" placeholder="Tell us a little about the issue…"></textarea>
+          <div style="overflow:hidden"><button class="btn-send" onclick="showToast('Message sent! We\'ll be in touch within 24h.')">Send</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('show')})});
+
+var isMobile=function(){return window.innerWidth<=768};
+var sbOpen=false;
+function toggleSb(){
+  if(isMobile()){sbOpen=!sbOpen;document.getElementById('sidebar').classList.toggle('open',sbOpen);document.getElementById('sb-overlay').classList.toggle('show',sbOpen);}
+  else{var sb=document.getElementById('sidebar');var m=document.getElementById('main');var c=sb.classList.toggle('collapsed');m.classList.toggle('sb-collapsed',c);}
+}
+function closeSb(){sbOpen=false;document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');}
+
+var pathways=[
+  {title:'Stress relief in 21 days',meta:'21 days · 63 tasks · Published',icon:'#E1F5EE',stroke:'#0F6E56',enrolled:487,completion:'68%',time:'24 min',rating:'4.7★',days:[
+    {title:'Understanding your stress triggers',pct:94,tasks:[{t:'Listen: What is stress?',type:'audio',dur:'8 min',done:true},{t:'Log your mood',type:'mood',dur:'1 min',done:true},{t:'Identify 3 stress triggers',type:'journal',dur:'5 min',done:true}]},
+    {title:'Breathing as a reset tool',pct:91,tasks:[{t:'Listen: Box breathing technique',type:'audio',dur:'10 min',done:true},{t:'Practice breathing exercise',type:'audio',dur:'5 min',done:true},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'The body-mind connection',pct:88,tasks:[{t:'Watch: Stress & the body',type:'video',dur:'12 min',done:true},{t:'Listen: Muscle relaxation',type:'audio',dur:'15 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'Building a morning anchor',pct:82,tasks:[{t:'Listen: Morning intention',type:'audio',dur:'7 min',done:false},{t:'Journal: My ideal morning',type:'journal',dur:'5 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'Reframing negative thoughts',pct:76,tasks:[{t:'Listen: Cognitive reframing',type:'audio',dur:'11 min',done:false},{t:'Watch: Thought patterns',type:'video',dur:'9 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]}
+  ]},
+  {title:'Better sleep in 14 days',meta:'14 days · 42 tasks · Published',icon:'#EEEDFE',stroke:'#534AB7',enrolled:312,completion:'74%',time:'26 min',rating:'4.9★',days:[
+    {title:'Your sleep architecture',pct:97,tasks:[{t:'Listen: Sleep cycles',type:'audio',dur:'12 min',done:true},{t:'Log your mood',type:'mood',dur:'1 min',done:true},{t:'Track last night\'s sleep',type:'journal',dur:'3 min',done:true}]},
+    {title:'Creating a sleep sanctuary',pct:93,tasks:[{t:'Watch: Bedroom environment',type:'video',dur:'10 min',done:true},{t:'Listen: Evening wind-down',type:'audio',dur:'18 min',done:true},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'Taming the racing mind',pct:87,tasks:[{t:'Listen: Thought dumping',type:'audio',dur:'8 min',done:false},{t:'Journal: Brain dump before bed',type:'journal',dur:'5 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'Sleep hygiene deep dive',pct:79,tasks:[{t:'Watch: Caffeine & sleep science',type:'video',dur:'14 min',done:false},{t:'Listen: Guided sleep meditation',type:'audio',dur:'20 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]}
+  ]},
+  {title:'Focus & productivity boost',meta:'30 days · 90 tasks · Unpublished',icon:'#FEF3C7',stroke:'#854F0B',enrolled:0,completion:'—',time:'25 min',rating:'4.6★',days:[
+    {title:'The attention economy',pct:0,tasks:[{t:'Listen: Why focus is hard',type:'audio',dur:'10 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false},{t:'Journal: Distraction patterns',type:'journal',dur:'5 min',done:false}]},
+    {title:'Deep work fundamentals',pct:0,tasks:[{t:'Watch: Deep work principles',type:'video',dur:'16 min',done:false},{t:'Listen: Focus & brain states',type:'audio',dur:'8 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]}
+  ]},
+  {title:'Building resilience',meta:'28 days · 84 tasks · Published',icon:'#FCE7F3',stroke:'#993556',enrolled:198,completion:'55%',time:'22 min',rating:'4.5★',days:[
+    {title:'What resilience really means',pct:88,tasks:[{t:'Listen: Resilience vs toughness',type:'audio',dur:'9 min',done:true},{t:'Log your mood',type:'mood',dur:'1 min',done:true},{t:'Journal: My resilience story',type:'journal',dur:'5 min',done:true}]},
+    {title:'The bounce-back mindset',pct:81,tasks:[{t:'Watch: Post-traumatic growth',type:'video',dur:'18 min',done:true},{t:'Listen: Finding meaning',type:'audio',dur:'12 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]},
+    {title:'Social support as armour',pct:72,tasks:[{t:'Listen: The science of belonging',type:'audio',dur:'10 min',done:false},{t:'Journal: My support network',type:'journal',dur:'5 min',done:false},{t:'Log your mood',type:'mood',dur:'1 min',done:false}]}
+  ]}
+];
+
+var programs=[
+  {title:'Morning mindfulness series',meta:'12 audio modules · 48 min total',icon:'#E1F5EE',stroke:'#0F6E56',streams:543,completion:'82%',duration:'48 min',rating:'4.8★',modules:[{title:'Waking with intention',type:'audio',dur:'4:30'},{title:'The breath as anchor',type:'audio',dur:'6:00'},{title:'Body scan for clarity',type:'audio',dur:'8:00'},{title:'Setting the day\'s tone',type:'audio',dur:'5:30'},{title:'Gratitude warm-up',type:'audio',dur:'4:00'},{title:'Visualising a good day',type:'audio',dur:'7:00'},{title:'Mindful movement intro',type:'audio',dur:'3:30'},{title:'Focus activation',type:'audio',dur:'5:00'},{title:'الصباح الهادئ',type:'audio',dur:'4:30'},{title:'Centering practice',type:'audio',dur:'3:00'},{title:'Energy and joy',type:'audio',dur:'4:00'},{title:'Closing the morning ritual',type:'audio',dur:'3:00'}]},
+  {title:'Evening wind-down collection',meta:'8 audio modules · 36 min total',icon:'#EEEDFE',stroke:'#534AB7',streams:421,completion:'71%',duration:'36 min',rating:'4.6★',modules:[{title:'Releasing the day',type:'audio',dur:'5:00'},{title:'Progressive body relaxation',type:'audio',dur:'8:00'},{title:'الاسترخاء قبل النوم',type:'audio',dur:'6:00'},{title:'Slowing the breath',type:'audio',dur:'4:00'},{title:'Gratitude at day\'s end',type:'audio',dur:'3:30'},{title:'Guided sleep imagery',type:'audio',dur:'5:30'},{title:'Letting thoughts go',type:'audio',dur:'3:00'},{title:'Deep sleep induction',type:'audio',dur:'5:00'}]},
+  {title:'Workplace confidence',meta:'16 video modules · 64 min total',icon:'#FEF3C7',stroke:'#854F0B',streams:0,completion:'—',duration:'64 min',rating:'4.4★',modules:[{title:'Understanding self-doubt',type:'video',dur:'4:00'},{title:'Body language basics',type:'video',dur:'5:00'},{title:'Speaking with authority',type:'video',dur:'4:30'},{title:'Handling criticism well',type:'video',dur:'3:30'},{title:'الثقة في بيئة العمل',type:'video',dur:'5:00'},{title:'Preparing for presentations',type:'video',dur:'4:00'},{title:'Managing imposter syndrome',type:'video',dur:'4:30'},{title:'Building your personal brand',type:'video',dur:'4:00'},{title:'Assertive communication',type:'video',dur:'4:30'},{title:'Networking with confidence',type:'video',dur:'3:30'},{title:'Receiving praise gracefully',type:'video',dur:'3:00'},{title:'Setting healthy boundaries',type:'video',dur:'4:30'},{title:'Leading from strength',type:'video',dur:'4:00'},{title:'Rebounding after setbacks',type:'video',dur:'5:00'},{title:'Your confidence ritual',type:'video',dur:'3:30'},{title:'Closing: your confident self',type:'video',dur:'4:30'}]},
+  {title:'Nature & calm soundscapes',meta:'20 audio modules · 120 min total',icon:'#D1FAE5',stroke:'#3B6D11',streams:289,completion:'60%',duration:'120 min',rating:'4.7★',modules:[{title:'Forest morning',type:'audio',dur:'6:00'},{title:'Rain on leaves',type:'audio',dur:'8:00'},{title:'Ocean waves at dusk',type:'audio',dur:'7:00'},{title:'Mountain stream',type:'audio',dur:'5:30'},{title:'Desert wind',type:'audio',dur:'6:30'},{title:'Birdsong meadow',type:'audio',dur:'4:30'},{title:'أصوات الطبيعة',type:'audio',dur:'7:00'},{title:'Thunderstorm ambient',type:'audio',dur:'8:00'},{title:'Lakeside evening',type:'audio',dur:'6:00'},{title:'Crackling fireplace',type:'audio',dur:'5:00'},{title:'Gentle river flow',type:'audio',dur:'6:30'},{title:'Night insects & stars',type:'audio',dur:'7:00'},{title:'Winter stillness',type:'audio',dur:'5:30'},{title:'Spring awakening',type:'audio',dur:'6:00'},{title:'Autumn forest walk',type:'audio',dur:'6:30'},{title:'High altitude silence',type:'audio',dur:'5:00'},{title:'Coastal morning fog',type:'audio',dur:'6:00'},{title:'Waterfall meditation',type:'audio',dur:'7:30'},{title:'Sunrise birdsong',type:'audio',dur:'5:00'},{title:'Infinite horizon',type:'audio',dur:'8:00'}]}
+];
+
+function fmtTime(s){var m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec;}
+function parseDur(d){var p=d.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
+function taskBg(t){if(t==='audio')return'background:#E1F5EE;color:#0F6E56';if(t==='video')return'background:#EEEDFE;color:#534AB7';if(t==='mood')return'background:#FEF3C7;color:#854F0B';return'background:#EAF3DE;color:#3B6D11';}
+function taskSvg(t){
+  if(t==='audio')return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>';
+  if(t==='video')return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+  if(t==='mood')return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
+  return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
+}
+
+function openPathway(idx){
+  var p=pathways[idx];
+  document.getElementById('pd-title').textContent=p.title;document.getElementById('pd-meta').textContent=p.meta;document.getElementById('pd-enrolled').textContent=p.enrolled;document.getElementById('pd-completion').textContent=p.completion;document.getElementById('pd-time').textContent=p.time;document.getElementById('pd-rating').textContent=p.rating;
+  var ic=document.getElementById('pd-icon');ic.style.background=p.icon;ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="'+p.stroke+'" stroke-width="1.8" stroke-linecap="round"><path d="M12 22c4-4 8-8 8-12A8 8 0 0 0 4 10c0 4 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg>';
+  var dc=document.getElementById('pd-days');dc.innerHTML='';
+  p.days.forEach(function(d,di){
+    var dr=document.createElement('div');dr.className='day-row';
+    var hdr=document.createElement('div');hdr.className='day-hdr';
+    hdr.innerHTML='<div class="day-num">'+(di+1)+'</div><div class="day-title">'+d.title+'</div><div class="day-pct">'+d.pct+'%</div><svg class="day-chev" viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg>';
+    var tc=document.createElement('div');tc.className='day-tasks';
+    d.tasks.forEach(function(tk){var tr=document.createElement('div');tr.className='task-row';var done=tk.done?'<div class="task-chk done"><svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg></div>':'<div class="task-chk"></div>';tr.innerHTML='<div class="task-icon" style="'+taskBg(tk.type)+'">'+taskSvg(tk.type)+'</div><div class="task-name">'+tk.t+'</div><div class="task-dur">'+tk.dur+'</div>'+done;tc.appendChild(tr);});
+    hdr.onclick=function(){var ch=hdr.querySelector('.day-chev');tc.classList.toggle('open');ch.classList.toggle('open');};
+    dr.appendChild(hdr);dr.appendChild(tc);dc.appendChild(dr);
+  });
+  showView('pathway-detail',document.querySelector('.ni[onclick*=pathways]'));
+}
+
+var progTimer=null,progPlaying=false,progSecs=0,progTotal=0,progCurrentBtn=null;
+function openProgram(idx){
+  var p=programs[idx];
+  document.getElementById('prog-title').textContent=p.title;document.getElementById('prog-meta').textContent=p.meta;document.getElementById('prog-streams').textContent=p.streams;document.getElementById('prog-completion').textContent=p.completion;document.getElementById('prog-duration').textContent=p.duration;document.getElementById('prog-rating').textContent=p.rating;
+  var ic=document.getElementById('prog-icon');ic.style.background=p.icon;ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="'+p.stroke+'" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>';
+  stopProgPlayer();
+  var mc=document.getElementById('prog-modules');mc.innerHTML='';
+  p.modules.forEach(function(m,mi){
+    var row=document.createElement('div');row.className='mod-row';
+    var ibg=m.type==='audio'?'background:#E1F5EE;color:#0F6E56':'background:#EEEDFE;color:#534AB7';
+    var isvg=m.type==='audio'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    row.innerHTML='<div class="mod-num">'+(mi+1)+'</div><div class="mod-icon" style="'+ibg+'">'+isvg+'</div><div class="mod-info"><div class="mod-title">'+m.title+'</div><div class="mod-meta">'+m.type+' · '+m.dur+'</div></div><button class="mod-play" onclick="progPlay('+mi+','+idx+',this)"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></button>';
+    mc.appendChild(row);
+  });
+  showView('program-detail',document.querySelector('.ni[onclick*=programs]'));
+}
+
+function progPlay(modIdx,progIdx,btn){
+  var m=programs[progIdx].modules[modIdx];progTotal=parseDur(m.dur);
+  if(progCurrentBtn&&progCurrentBtn!==btn){progCurrentBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';progCurrentBtn.classList.remove('playing');}
+  progCurrentBtn=btn;
+  document.getElementById('prog-pb-title').textContent=m.title;
+  var pt=document.getElementById('prog-pb-type');pt.textContent=m.type.toUpperCase();pt.className='pb-type '+m.type;
+  var pbic=document.getElementById('prog-pb-icon');pbic.style.background=m.type==='audio'?'#E1F5EE':'#EEEDFE';pbic.innerHTML=m.type==='audio'?'<svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="#534AB7" width="15" height="15" stroke-width="2" stroke-linecap="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+  document.getElementById('prog-player-bar').classList.add('active');
+  clearInterval(progTimer);progSecs=0;progPlaying=true;
+  btn.classList.add('playing');btn.innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  document.getElementById('prog-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  progTimer=setInterval(function(){progSecs++;var pct=Math.min(100,(progSecs/progTotal)*100);document.getElementById('prog-pb-fill').style.width=pct+'%';document.getElementById('prog-pb-time').textContent=fmtTime(progSecs)+' / '+fmtTime(progTotal);if(progSecs>=progTotal)clearInterval(progTimer);},1000);
+}
+function toggleProgPlay(){if(progPlaying){clearInterval(progTimer);progPlaying=false;document.getElementById('prog-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';if(progCurrentBtn){progCurrentBtn.classList.remove('playing');progCurrentBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';}}else{progPlaying=true;document.getElementById('prog-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';if(progCurrentBtn){progCurrentBtn.classList.add('playing');progCurrentBtn.innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';}clearInterval(progTimer);progTimer=setInterval(function(){progSecs++;var pct=Math.min(100,(progSecs/progTotal)*100);document.getElementById('prog-pb-fill').style.width=pct+'%';document.getElementById('prog-pb-time').textContent=fmtTime(progSecs)+' / '+fmtTime(progTotal);if(progSecs>=progTotal)clearInterval(progTimer);},1000);}}
+function seekProg(e){var r=e.currentTarget.getBoundingClientRect();progSecs=Math.round(((e.clientX-r.left)/r.width)*progTotal);document.getElementById('prog-pb-fill').style.width=Math.min(100,(progSecs/progTotal)*100)+'%';document.getElementById('prog-pb-time').textContent=fmtTime(progSecs)+' / '+fmtTime(progTotal);}
+function stopProgPlayer(){clearInterval(progTimer);progPlaying=false;document.getElementById('prog-player-bar').classList.remove('active');if(progCurrentBtn){progCurrentBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';progCurrentBtn.classList.remove('playing');progCurrentBtn=null;}progSecs=0;document.getElementById('prog-pb-fill').style.width='0%';}
+
+var libTimer=null,libPlaying=false,libSecs=0,libTotal=0,libCurBtn=null;
+function libPlay(type,title,dur,btn){
+  libTotal=parseDur(dur);
+  if(libCurBtn&&libCurBtn!==btn){libCurBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';libCurBtn.classList.remove('playing');}
+  libCurBtn=btn;
+  document.getElementById('lib-pb-title').textContent=title;var lt=document.getElementById('lib-pb-type');lt.textContent=type.toUpperCase();lt.className='pb-type '+type;
+  var lic=document.getElementById('lib-pb-icon');lic.style.background=type==='audio'?'#E1F5EE':'#EEEDFE';lic.innerHTML=type==='audio'?'<svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="#534AB7" width="15" height="15" stroke-width="2" stroke-linecap="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+  document.getElementById('lib-player-bar').classList.add('active');clearInterval(libTimer);libSecs=0;libPlaying=true;
+  btn.classList.add('playing');btn.innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  document.getElementById('lib-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  libTimer=setInterval(function(){libSecs++;var pct=Math.min(100,(libSecs/libTotal)*100);document.getElementById('lib-pb-fill').style.width=pct+'%';document.getElementById('lib-pb-time').textContent=fmtTime(libSecs)+' / '+fmtTime(libTotal);if(libSecs>=libTotal)clearInterval(libTimer);},1000);
+}
+function toggleLibPlay(){if(libPlaying){clearInterval(libTimer);libPlaying=false;document.getElementById('lib-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';if(libCurBtn){libCurBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';libCurBtn.classList.remove('playing');}}else{libPlaying=true;document.getElementById('lib-pb-btn').innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';if(libCurBtn){libCurBtn.classList.add('playing');libCurBtn.innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';}clearInterval(libTimer);libTimer=setInterval(function(){libSecs++;var pct=Math.min(100,(libSecs/libTotal)*100);document.getElementById('lib-pb-fill').style.width=pct+'%';document.getElementById('lib-pb-time').textContent=fmtTime(libSecs)+' / '+fmtTime(libTotal);if(libSecs>=libTotal)clearInterval(libTimer);},1000);}}
+function seekLib(e){var r=e.currentTarget.getBoundingClientRect();libSecs=Math.round(((e.clientX-r.left)/r.width)*libTotal);document.getElementById('lib-pb-fill').style.width=Math.min(100,(libSecs/libTotal)*100)+'%';document.getElementById('lib-pb-time').textContent=fmtTime(libSecs)+' / '+fmtTime(libTotal);}
+function stopLibPlayer(){clearInterval(libTimer);libPlaying=false;document.getElementById('lib-player-bar').classList.remove('active');if(libCurBtn){libCurBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';libCurBtn.classList.remove('playing');}libCurBtn=null;libSecs=0;document.getElementById('lib-pb-fill').style.width='0%';}
+
+var pageTitles={analytics:['Analytics overview','Track and manage community wellbeing engagement'],users:['Users','Manage your community members'],pathways:['Pathways','Publish and track learning pathways'],'pathway-detail':['Pathway detail','Day-by-day structure and task breakdown'],programs:['Programs','Manage themed content programs'],'program-detail':['Program detail','Module list and preview'],library:['Content library','Control what your community sees'],team:['Team & access','Manage portal roles'],support:['Support','Get in touch with Tuhoon']};
+
+function showView(name,navEl){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active')});
+  if(navEl) navEl.classList.add('active');
+  var t=pageTitles[name]||[name,''];
+  document.getElementById('page-title').textContent=t[0];document.getElementById('page-sub').textContent=t[1];
+  document.getElementById('cf-wrap').classList.toggle('show',name==='analytics');
+  if(isMobile()) closeSb();
+  window.scrollTo(0,0);
+}
+function setFilter(el){document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('active')});el.classList.add('active');}
+function setLibTab(el,tab){document.querySelectorAll('.lt').forEach(function(t){t.classList.remove('active')});el.classList.add('active');document.getElementById('lib-audio').style.display=tab==='audio'?'grid':'none';document.getElementById('lib-video').style.display=tab==='video'?'grid':'none';}
+function toggleP(el){el.classList.toggle('on');el.classList.toggle('off');showToast(el.classList.contains('on')?'Published to community.':'Unpublished.');}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(function(){t.style.display='none'},2600);}
+function doLogin(){document.getElementById('login-screen').style.display='none';document.getElementById('dashboard').style.display='block';setTimeout(initCharts,120);}
+function doLogout(){stopProgPlayer();stopLibPlayer();document.getElementById('dashboard').style.display='none';document.getElementById('login-screen').style.display='flex';}
+
+var chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;chartsInit=true;
+  var teal='#3AAFA9',purple='#7B6FD0';
+  var L7=['Apr 12','Apr 13','Apr 14','Apr 15','Apr 16','Apr 17','Apr 18'];
+
+  new Chart(document.getElementById('chart-listen'),{type:'line',data:{labels:L7,datasets:[{label:'min',data:[23,26,22,27,29,25,24],borderColor:teal,backgroundColor:'rgba(58,175,169,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:teal}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{min:15,max:35,grid:{color:'#F3F4F6'},ticks:{font:{size:10},callback:function(v){return v+'m'}}}}}});
+
+  new Chart(document.getElementById('chart-mood'),{type:'line',data:{labels:L7,datasets:[{label:'mood',data:[6.9,7.2,7.1,7.4,7.6,7.3,7.4],borderColor:purple,backgroundColor:'rgba(123,111,208,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:purple}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{min:5,max:10,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+
+  new Chart(document.getElementById('chart-seats'),{type:'doughnut',data:{datasets:[{data:[721,779],backgroundColor:[teal,'#E5E7EB'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false}}}});
+
+  new Chart(document.getElementById('chart-daily'),{type:'bar',data:{labels:L7,datasets:[{label:'min',data:[16200,18400,14800,19700,21300,17600,17100],backgroundColor:'rgba(58,175,169,0.72)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#F3F4F6'},ticks:{font:{size:10},callback:function(v){return Math.round(v/1000)+'k'}}}}}});
+
+  var H=['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm','11pm'];
+  new Chart(document.getElementById('chart-hourly'),{type:'bar',data:{labels:H,datasets:[{label:'min',data:[220,680,1240,1380,820,540,760,680,490,420,510,680,760,880,1180,1420,980,340],backgroundColor:'rgba(123,111,208,0.68)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:45}},y:{grid:{color:'#F3F4F6'},ticks:{font:{size:10},callback:function(v){return v>=1000?(v/1000).toFixed(1)+'k':v}}}}}});
+
+  var W8=['7 Feb','14 Feb','21 Feb','28 Feb','7 Mar','14 Mar','21 Mar','28 Mar'];
+  new Chart(document.getElementById('chart-wau'),{type:'line',data:{labels:W8,datasets:[{label:'users',data:[524,558,571,590,614,638,672,697],borderColor:'#10B981',backgroundColor:'rgba(16,185,129,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#10B981'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:480,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+}
+</script>
+</body>
+</html>
