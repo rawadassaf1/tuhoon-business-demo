@@ -16,8 +16,6 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg)}
 #app{width:100%;min-height:100vh}
-
-/* LOGIN */
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#E8F7F5;padding:20px}
 .lcard{background:#fff;border-radius:16px;padding:36px 28px;width:100%;max-width:400px}
 .llogo{text-align:center;margin-bottom:20px}
@@ -27,15 +25,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lsub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:24px}
 .fg{margin-bottom:14px}
 .fg label{display:block;font-size:13px;font-weight:500;color:var(--txt);margin-bottom:5px}
-.fg input{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:14px;outline:none}
-.fg input:focus{border-color:var(--teal)}
+.fg input,.fg select{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:var(--rs);font-size:14px;outline:none;background:#fff}
+.fg input:focus,.fg select:focus{border-color:var(--teal)}
 .forgot{display:block;font-size:13px;color:var(--teal);margin-bottom:18px;cursor:pointer}
 .btn-login{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer}
 
 /* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
-.modal-box{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:460px}
+.modal-box{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:17px;font-weight:700;color:var(--txt);margin-bottom:4px}
 .modal-sub{font-size:13px;color:var(--txt2);margin-bottom:20px}
 .modal-fg{margin-bottom:14px}
@@ -54,7 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #sb-overlay.show{display:block}
 
 /* SIDEBAR */
-.sb{position:fixed;top:0;left:0;height:100vh;width:var(--sb-w);background:linear-gradient(160deg,#1a1a2e 0%,#2d2b55 50%,#1a3a3a 100%);display:flex;flex-direction:column;z-index:100;transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);will-change:transform}
+.sb{position:fixed;top:0;left:0;height:100vh;width:var(--sb-w);background:linear-gradient(160deg,#1a1a2e 0%,#2d2b55 50%,#1a3a3a 100%);display:flex;flex-direction:column;z-index:100;transition:transform 0.28s cubic-bezier(0.4,0,0.2,1)}
 @media(max-width:768px){.sb{transform:translateX(calc(-1 * var(--sb-w)))}.sb.open{transform:translateX(0)}.main{margin-left:0!important}}
 @media(min-width:769px){.sb.collapsed{transform:translateX(calc(-1 * var(--sb-w)))}.main{margin-left:var(--sb-w);transition:margin-left 0.28s cubic-bezier(0.4,0,0.2,1)}.main.sb-collapsed{margin-left:0}}
 .sb-logo{padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,0.07)}
@@ -65,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-logo-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
 .sb-section{padding:14px 14px 4px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase}
 .sb-nav{flex:1;padding:8px 10px;overflow-y:auto}
-.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);color:rgba(255,255,255,0.55);font-size:13.5px;cursor:pointer;margin-bottom:1px;transition:all 0.15s;user-select:none;-webkit-tap-highlight-color:transparent}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer;margin-bottom:1px;transition:all 0.15s;user-select:none;-webkit-tap-highlight-color:transparent}
 .ni:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9)}
 .ni.active{background:rgba(58,175,169,0.2);color:#fff}
 .ni.active .ni-icon{color:var(--teal)}
@@ -78,7 +76,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-email{font-size:12px;color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-org{font-size:10px;color:rgba(255,255,255,0.35)}
 .sb-logout{margin-left:auto;cursor:pointer;opacity:0.5;flex-shrink:0;padding:4px}
-.sb-logout:hover{opacity:0.9}
 .sb-logout svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
 
 /* MAIN */
@@ -92,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar-sub{font-size:11px;color:var(--txt2);margin-top:1px;display:none}
 @media(min-width:769px){.topbar-sub{display:block}}
 .topbar-r{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.btn-exp{padding:7px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn-exp{padding:7px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer}
 #cf-wrap{display:none}
 #cf-wrap.show{display:flex}
 .cfilters{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:12px 20px 0;scrollbar-width:none}
@@ -111,6 +108,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kc.tl::before{background:var(--teal)}.kc.pu::before{background:var(--purple)}
 .kc.gr::before{background:#10B981}.kc.am::before{background:#F59E0B}
 .kc.pk::before{background:#EC4899}.kc.bl::before{background:#3B82F6}
+.kc.rd::before{background:#EF4444}.kc.cy::before{background:#06B6D4}
 .kl{font-size:10px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:7px}
 .kv{font-size:24px;font-weight:700;color:var(--txt);line-height:1}
 .ks{font-size:11px;color:var(--txt2);margin-top:4px}
@@ -125,7 +123,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ct{font-size:13px;font-weight:600;color:var(--txt)}
 .cs{font-size:11px;color:var(--txt2);margin-top:2px}
 
-/* MOOD */
+/* MOOD / OBJ */
 .mrow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .mlbl{font-size:12px;width:56px}
 .mbw{flex:1;height:7px;background:#F3F4F6;border-radius:4px;overflow:hidden}
@@ -145,8 +143,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sleg{display:flex;justify-content:center;gap:16px}
 .sli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt2)}
 .sdt{width:8px;height:8px;border-radius:50%}
-
-/* TITLE LIST */
 .trow2{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .trk{font-size:11px;font-weight:700;color:var(--txt3);width:16px}
 .tn{font-size:12px;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -154,15 +150,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tbar{height:100%;background:var(--teal);border-radius:3px}
 .tv{font-size:11px;color:var(--txt2);width:22px;text-align:right;flex-shrink:0}
 
-/* CONTENT TYPE BARS */
+/* SEG BARS */
 .seg-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .seg-row:last-child{margin-bottom:0}
 .seg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.seg-label{font-size:12px;color:var(--txt2);width:64px;flex-shrink:0}
+.seg-label{font-size:12px;color:var(--txt2);width:80px;flex-shrink:0}
 .seg-track{flex:1;height:7px;background:#F3F4F6;border-radius:4px;overflow:hidden}
 .seg-fill{height:100%;border-radius:4px}
 .seg-pct{font-size:12px;font-weight:600;color:var(--txt);width:28px;text-align:right;flex-shrink:0}
-.seg-mins{font-size:10px;color:var(--txt2);width:54px;text-align:right;flex-shrink:0}
+.seg-val{font-size:10px;color:var(--txt2);width:48px;text-align:right;flex-shrink:0}
 
 /* USERS */
 .uh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
@@ -180,6 +176,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .badge.act{background:#D1FAE5;color:#065F46}
 .badge.exp{background:#FEE2E2;color:#991B1B}
 .badge.pnd{background:#FEF3C7;color:#92400E}
+.badge.m{background:#E0E7FF;color:#3730A3}
+.badge.f{background:#FCE7F3;color:#9D174D}
 .pcell{display:flex;align-items:center;gap:6px}
 .mb2{width:50px;height:4px;background:#E5E7EB;border-radius:3px;overflow:hidden}
 .mf{height:100%;background:var(--teal);border-radius:3px}
@@ -190,16 +188,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ucard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
 .ucard-name{font-size:13px;font-weight:600;color:var(--txt)}
 .ucard-email{font-size:11px;color:var(--txt2);margin-top:1px}
-.ucard-stats{display:flex;gap:16px;margin-bottom:8px}
+.ucard-stats{display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap}
 .ustat{font-size:10px;color:var(--txt2)}
 .ustat strong{display:block;font-size:13px;font-weight:600;color:var(--txt)}
 .ubar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:3px}
 .ubar-track{height:4px;background:#E5E7EB;border-radius:3px;overflow:hidden}
 .ubar-fill{height:100%;background:var(--teal);border-radius:3px}
 
-/* PATHWAY / PROGRAM CARDS */
+/* THERAPY CARDS */
+.therapist-list{display:flex;flex-direction:column;gap:10px}
+.therapist-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--bdr);border-radius:var(--rs);padding:12px 14px}
+.th-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.th-name{font-size:13px;font-weight:500;color:var(--txt)}
+.th-spec{font-size:11px;color:var(--txt2);margin-top:1px}
+.th-stat{text-align:right;flex-shrink:0}
+.th-sessions{font-size:13px;font-weight:700;color:var(--txt)}
+.th-rating{font-size:11px;color:#F59E0B}
+
+/* HOTLINE SEVERITY */
+.sev-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F9FAFB}
+.sev-row:last-child{border:none}
+.sev-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sev-label{font-size:12px;color:var(--txt);flex:1}
+.sev-bar-wrap{width:100px;height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden}
+.sev-bar{height:100%;border-radius:3px}
+.sev-count{font-size:12px;font-weight:600;color:var(--txt);width:28px;text-align:right}
+.sev-pct{font-size:10px;color:var(--txt2);width:30px;text-align:right}
+
+/* PATHWAY CARDS */
 .pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.pcard{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color 0.15s;-webkit-tap-highlight-color:transparent}
+.pcard{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color 0.15s}
 .pcard:hover{border-color:var(--teal)}
 .phdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
 .picon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -218,11 +236,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tog2.off{background:#D1D5DB;justify-content:flex-start}
 .tth{width:14px;height:14px;border-radius:50%;background:#fff}
 
-/* BACK BTN */
+/* DETAIL */
 .back-btn{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--teal);font-size:13px;font-weight:500;margin-bottom:14px;width:fit-content}
 .back-btn svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-width:2.5;stroke-linecap:round}
-
-/* DETAIL HERO */
 .detail-hero{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:14px}
 .hero-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .hero-icon{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -234,8 +250,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-box{background:var(--bg);border-radius:var(--rs);padding:12px 14px}
 .stat-lbl{font-size:10px;color:var(--txt2);margin-bottom:3px}
 .stat-val{font-size:18px;font-weight:700;color:var(--txt)}
-
-/* PATHWAY DAYS */
 .day-row{border:1px solid var(--bdr);border-radius:var(--rs);margin-bottom:8px;overflow:hidden}
 .day-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:#fff}
 .day-num{width:26px;height:26px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0F6E56;flex-shrink:0}
@@ -348,7 +362,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="modal-fg"><label>From date</label><input type="date" value="2026-04-01"></div>
       <div class="modal-fg"><label>To date</label><input type="date" value="2026-04-18"></div>
     </div>
-    <div class="modal-fg"><label>Include sections</label><select><option>All sections</option><option>Analytics only</option><option>Users only</option><option>Content only</option></select></div>
+    <div class="modal-fg"><label>Include sections</label><select><option>All sections</option><option>Analytics only</option><option>Users only</option><option>Therapy only</option><option>Hotline only</option></select></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modal-export')">Cancel</button>
       <button class="btn-confirm" onclick="closeModal('modal-export');showToast('Export queued — you\'ll receive it by email.')">Export</button>
@@ -379,15 +393,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-title">Add new user</div>
     <div class="modal-sub">Add a community member and assign them a seat.</div>
     <div class="modal-row">
-      <div class="modal-fg"><label>First name</label><input type="text" placeholder="Ahmad"></div>
-      <div class="modal-fg"><label>Last name</label><input type="text" placeholder="Hassan"></div>
-    </div>
-    <div class="modal-fg"><label>Email address</label><input type="email" placeholder="ahmad@acmecorp.com"></div>
-    <div class="modal-fg"><label>Phone number</label><input type="tel" placeholder="+966 5x xxx xxxx"></div>
-    <div class="modal-row">
-      <div class="modal-fg"><label>Country</label><select><option>Saudi Arabia</option><option>Iraq</option><option>Jordan</option><option>Sudan</option><option>Bahrain</option><option>Kuwait</option><option>Other</option></select></div>
+      <div class="modal-fg"><label>Age</label><input type="number" placeholder="32" min="18" max="70"></div>
       <div class="modal-fg"><label>Gender</label><select><option>Male</option><option>Female</option><option>Prefer not to say</option></select></div>
     </div>
+    <div class="modal-fg"><label>Department</label><select><option>Engineering</option><option>Sales</option><option>HR</option><option>Finance</option><option>Operations</option><option>Marketing</option><option>Legal</option><option>Other</option></select></div>
+    <div class="modal-row">
+      <div class="modal-fg"><label>Country</label><select><option>Saudi Arabia</option><option>Iraq</option><option>Jordan</option><option>Sudan</option><option>Bahrain</option><option>Kuwait</option><option>Other</option></select></div>
+      <div class="modal-fg"><label>Employee ID (optional)</label><input type="text" placeholder="EMP-1042"></div>
+    </div>
+    <div class="modal-fg"><label>Work email</label><input type="email" placeholder="user@acmecorp.com"></div>
     <div class="modal-fg"><label>Assign pathway (optional)</label><select><option>— None —</option><option>Stress relief in 21 days</option><option>Better sleep in 14 days</option><option>Focus &amp; productivity boost</option><option>Building resilience</option></select></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modal-add-user')">Cancel</button>
@@ -402,7 +416,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="llogo"><div class="llogo-t">تهون</div><div class="llogo-s">Business portal</div></div>
     <div class="ltitle">Log in to your account</div>
     <div class="lsub">Welcome back! Please enter your details.</div>
-    <div class="fg"><label>Email</label><input type="email" value="hr.admin@acmecorp.com" autocomplete="email"></div>
+    <div class="fg"><label>Email</label><input type="email" value="hr.admin@acmecorp.com"></div>
     <div class="fg"><label>Password</label><input type="password" value="password"></div>
     <a class="forgot">Forgot password</a>
     <button class="btn-login" onclick="doLogin()">Sign in</button>
@@ -412,19 +426,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="dashboard">
   <div id="sb-overlay" onclick="closeSb()"></div>
   <div class="sb" id="sidebar">
-    <div class="sb-logo"><div class="sb-logo-row"><div class="sb-logo-icon">
-<svg width="100" height="33" viewBox="0 0 100 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M97.5526 5.432C98.9044 5.432 100 4.33625 100 2.98443C100 1.63261 98.9044 0.536865 97.5526 0.536865C96.2007 0.536865 95.105 1.63261 95.105 2.98443C95.105 4.33625 96.2007 5.432 97.5526 5.432Z" fill="white"/>
-<path d="M90.9212 5.432C92.273 5.432 93.3688 4.33619 93.3688 2.98443C93.3688 1.63268 92.273 0.536865 90.9212 0.536865C89.5694 0.536865 88.4736 1.63268 88.4736 2.98443C88.4736 4.33619 89.5694 5.432 90.9212 5.432Z" fill="white"/>
-<path d="M14.2847 11.4805C15.4916 11.4805 16.4702 10.5018 16.4702 9.29491C16.4702 8.088 15.4916 7.10938 14.2847 7.10938C13.0777 7.10938 12.0991 8.088 12.0991 9.29491C12.0991 10.5018 13.0777 11.4805 14.2847 11.4805Z" fill="white"/>
-<path d="M98.1535 10.8662C97.2315 10.8662 96.4851 11.6135 96.4851 12.5346V21.8842L77.2857 21.9735C79.7789 19.655 81.3421 16.3509 81.3421 12.6865C81.3421 5.69114 75.651 0 68.6557 0C64.0792 0 59.8401 2.48231 57.594 6.47722C57.5434 6.56754 57.5027 6.66084 57.4709 6.75612C53.8016 8.10794 51.1773 11.6393 51.1773 15.7722C51.1773 18.1652 52.0587 20.3537 53.5118 22.037H49.5714C49.5714 22.0301 49.5704 22.0231 49.5704 22.0162V15.9618C49.5704 10.7868 45.3601 6.57647 40.1851 6.57647C35.0101 6.57647 30.7998 10.7868 30.7998 15.9618C30.7998 21.1368 35.0101 25.3471 40.1851 25.3471H40.726C40.8233 25.365 40.9226 25.3749 41.0258 25.3749H45.3979C44.2177 27.5505 41.9131 29.0314 39.269 29.0314H34.229C33.3069 29.0314 32.5605 29.7787 32.5605 30.6998C32.5605 31.6209 33.3079 32.3682 34.229 32.3682H39.269C43.7929 32.3682 47.643 29.4363 49.0255 25.3739L60.7066 25.3729C60.7324 25.3729 60.7572 25.3749 60.783 25.3749H68.7182C68.7758 25.3749 68.8314 25.3719 68.887 25.366C69.0974 25.362 69.3068 25.354 69.5142 25.3392C69.5579 25.3431 69.6026 25.3461 69.6472 25.3461C69.6502 25.3461 69.6522 25.3461 69.6552 25.3461L98.1615 25.2131C99.0806 25.2091 99.823 24.4628 99.823 23.5447V12.5346C99.822 11.6135 99.0746 10.8662 98.1535 10.8662ZM68.6557 3.33786C73.8109 3.33786 78.0043 7.53128 78.0043 12.6865C78.0043 17.2501 74.717 21.0584 70.3857 21.8723V15.7712C70.3857 10.8543 66.6706 6.78986 61.9006 6.23405C63.6425 4.41177 66.0751 3.33786 68.6557 3.33786ZM54.5142 15.7712C54.5142 12.3162 57.325 9.50442 60.781 9.50442C64.237 9.50442 67.0478 12.3162 67.0478 15.7712V22.035L60.7056 22.036C57.2843 21.9953 54.5142 19.2014 54.5142 15.7712ZM34.1367 15.9618C34.1367 12.6269 36.8492 9.91334 40.1841 9.91334C43.519 9.91334 46.2316 12.6259 46.2316 15.9618V22.0092H40.1841C36.8492 22.0102 34.1367 19.2967 34.1367 15.9618Z" fill="white"/>
-<path d="M26.9004 10.8898C25.9784 10.8898 25.232 11.6372 25.232 12.5583V19.0782C25.232 20.833 24.7436 22.4964 23.8196 23.8889L23.7561 23.9822C20.5224 28.7563 14.2159 30.3721 9.08657 27.7429C7.30498 26.8298 5.79238 25.474 4.71152 23.8224C3.81229 22.4488 3.33687 20.8062 3.33687 19.0712V12.4551C3.33687 11.533 2.5895 10.7866 1.66843 10.7866C0.747371 10.7866 0 11.534 0 12.4551V19.0712C0 21.4563 0.663999 23.7311 1.91954 25.6497C3.31702 27.7846 5.26932 29.5354 7.56503 30.7116C9.7069 31.8103 12.0066 32.3343 14.2814 32.3343C19.0446 32.3343 23.6916 30.0297 26.5163 25.8591L26.6017 25.7321C27.89 23.7907 28.5708 21.489 28.5708 19.0752V12.5553C28.5688 11.6372 27.8215 10.8898 26.9004 10.8898Z" fill="white"/>
-</svg>
-</div><div><div class="sb-logo-name">تهون</div><div class="sb-logo-sub">Business portal</div></div></div></div>
+    <div class="sb-logo"><div class="sb-logo-row"><div class="sb-logo-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div><div><div class="sb-logo-name">تهون</div><div class="sb-logo-sub">Business portal</div></div></div></div>
     <div class="sb-nav">
       <div class="sb-section">Overview</div>
-      <div class="ni active" onclick="showView('analytics',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"></svg></span>Dashboard</div>
+      <div class="ni active" onclick="showView('analytics',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</div>
       <div class="ni" onclick="showView('users',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Users<span class="ni-badge">721</span></div>
+      <div class="sb-section">Wellbeing services</div>
+      <div class="ni" onclick="showView('therapy',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>Therapy sessions</div>
+      <div class="ni" onclick="showView('hotline',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>24/7 Hotline</div>
       <div class="sb-section">Content</div>
       <div class="ni" onclick="showView('pathways',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/><path d="M15 6l3 6-3 6"/></svg></span>Pathways</div>
       <div class="ni" onclick="showView('programs',this)"><span class="ni-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg></span>Programs</div>
@@ -464,12 +473,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="kc am"><div class="kl">Pathway completion</div><div class="kv">64<span style="font-size:13px;color:var(--txt2)">%</span></div><div class="ks">Avg. active users</div><div class="kch dn">↓ -2% vs last week</div></div>
           <div class="kc pk"><div class="kl">7-day retention</div><div class="kv">81<span style="font-size:13px;color:var(--txt2)">%</span></div><div class="ks">Users active 5+ days</div><div class="kch up">↑ +3% vs last week</div></div>
           <div class="kc bl"><div class="kl">Streak leaders</div><div class="kv">134</div><div class="ks">Users on 7+ day streak</div><div class="kch up">↑ +18 this week</div></div>
-          <div class="kc tl"><div class="kl">Journal entries</div><div class="kv">2,841</div><div class="ks">This week across community</div><div class="kch up">↑ +12% vs last week</div></div>
-          <div class="kc pu"><div class="kl">Modules completed</div><div class="kv">9,320</div><div class="ks">This week across community</div><div class="kch up">↑ +8% vs last week</div></div>
+          <div class="kc cy"><div class="kl">Therapy sessions</div><div class="kv">148</div><div class="ks">Booked this month</div><div class="kch up">↑ +22 vs last month</div></div>
+          <div class="kc rd"><div class="kl">Hotline calls</div><div class="kv">312</div><div class="ks">This month · avg 2.4 min</div><div class="kch up">↑ +38 vs last month</div></div>
         </div>
 
         <div class="crow">
-          <div class="cc"><div class="ch"><div><div class="ct">Average listening time</div><div class="cs">Minutes per user · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-listen" role="img" aria-label="Listening trend">23-29 min range.</canvas></div></div>
+          <div class="cc"><div class="ch"><div><div class="ct">Average listening time</div><div class="cs">Minutes per user · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-listen" role="img" aria-label="Listening trend">23-29 min.</canvas></div></div>
           <div class="cc"><div class="ch"><div><div class="ct">Mood trend</div><div class="cs">Community avg. · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-mood" role="img" aria-label="Mood trend">6.9-7.6.</canvas></div></div>
         </div>
 
@@ -505,16 +514,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
 
         <div class="crow">
-          <div class="cc">
-            <div class="ch"><div><div class="ct">Weekly active users</div><div class="cs">Unique users who engaged · last 8 weeks</div></div></div>
-            <div style="position:relative;height:160px"><canvas id="chart-wau" role="img" aria-label="Weekly active users">Growing trend 524 to 697.</canvas></div>
-          </div>
+          <div class="cc"><div class="ch"><div><div class="ct">Weekly active users</div><div class="cs">Unique users who engaged · last 8 weeks</div></div></div><div style="position:relative;height:160px"><canvas id="chart-wau" role="img" aria-label="Weekly active users">Growing 524 to 697.</canvas></div></div>
           <div class="cc">
             <div class="ch"><div><div class="ct">Content type engagement</div><div class="cs">Share of total listening minutes this week</div></div></div>
             <div style="margin-top:6px">
-              <div class="seg-row"><div class="seg-dot" style="background:#3AAFA9"></div><div class="seg-label">Audio</div><div class="seg-track"><div class="seg-fill" style="background:#3AAFA9;width:61%"></div></div><div class="seg-pct">61%</div><div class="seg-mins">11,042 min</div></div>
-              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Video</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:27%"></div></div><div class="seg-pct">27%</div><div class="seg-mins">4,886 min</div></div>
-              <div class="seg-row"><div class="seg-dot" style="background:#F59E0B"></div><div class="seg-label">Journaling</div><div class="seg-track"><div class="seg-fill" style="background:#F59E0B;width:12%"></div></div><div class="seg-pct">12%</div><div class="seg-mins">2,172 min</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#3AAFA9"></div><div class="seg-label">Audio</div><div class="seg-track"><div class="seg-fill" style="background:#3AAFA9;width:61%"></div></div><div class="seg-pct">61%</div><div class="seg-val">11,042 min</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Video</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:27%"></div></div><div class="seg-pct">27%</div><div class="seg-val">4,886 min</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#F59E0B"></div><div class="seg-label">Journaling</div><div class="seg-track"><div class="seg-fill" style="background:#F59E0B;width:12%"></div></div><div class="seg-pct">12%</div><div class="seg-val">2,172 min</div></div>
             </div>
           </div>
         </div>
@@ -525,23 +531,115 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="uh"><div class="uc">721 active · 1,500 total seats</div><div style="display:flex;gap:8px"><input class="si" type="search" placeholder="Search users"><button class="btn-add" onclick="openModal('modal-add-user')">+ Add new</button></div></div>
         <div class="tbl-wrap">
           <div class="dtbl-desktop"><table class="dtbl">
-            <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Joined</th><th>Listening</th><th>Pathways</th><th>Status</th></tr></thead>
+            <thead><tr><th>Age</th><th>Gender</th><th>Department</th><th>Country</th><th>Listening</th><th>Sessions</th><th>Pathways</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>Mohammad A.</td><td>m.ali@acmecorp.com</td><td>Iraq</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:90%"></div></div>26min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:60%"></div></div>2/3</div></td><td><span class="badge act">Active</span></td></tr>
-              <tr><td>Mawada E.</td><td>m.elawad@acmecorp.com</td><td>Sudan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:96%"></div></div>28min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
-              <tr><td>Abdulaziz A.</td><td>a.aleisa@acmecorp.com</td><td>Saudi Arabia</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:83%"></div></div>24min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge act">Active</span></td></tr>
-              <tr><td>Randa S.</td><td>r.saleh@acmecorp.com</td><td>Jordan</td><td>03/04/23</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0/3</div></td><td><span class="badge exp">Expired</span></td></tr>
-              <tr><td>Sara N.</td><td>s.neimat@acmecorp.com</td><td>Jordan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>30min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
-              <tr><td>Helen O.</td><td>h.osama@acmecorp.com</td><td>Sudan</td><td>14/09/22</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:55%"></div></div>16min</div></td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge pnd">Pending</span></td></tr>
+              <tr><td>34</td><td><span class="badge m">Male</span></td><td>Engineering</td><td>Iraq</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:90%"></div></div>26min</div></td><td>3</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:60%"></div></div>2/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>29</td><td><span class="badge f">Female</span></td><td>HR</td><td>Sudan</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:96%"></div></div>28min</div></td><td>5</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>41</td><td><span class="badge m">Male</span></td><td>Finance</td><td>Saudi Arabia</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:83%"></div></div>24min</div></td><td>1</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>26</td><td><span class="badge f">Female</span></td><td>Sales</td><td>Jordan</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0min</div></td><td>0</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:0%"></div></div>0/3</div></td><td><span class="badge exp">Expired</span></td></tr>
+              <tr><td>38</td><td><span class="badge f">Female</span></td><td>Operations</td><td>Jordan</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>30min</div></td><td>7</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>31</td><td><span class="badge f">Female</span></td><td>Marketing</td><td>Sudan</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:55%"></div></div>16min</div></td><td>2</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:33%"></div></div>1/3</div></td><td><span class="badge pnd">Pending</span></td></tr>
+              <tr><td>45</td><td><span class="badge m">Male</span></td><td>Legal</td><td>Kuwait</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:78%"></div></div>23min</div></td><td>4</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:67%"></div></div>2/3</div></td><td><span class="badge act">Active</span></td></tr>
+              <tr><td>52</td><td><span class="badge m">Male</span></td><td>Engineering</td><td>Bahrain</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:88%"></div></div>27min</div></td><td>6</td><td><div class="pcell"><div class="mb2"><div class="mf" style="width:100%"></div></div>3/3</div></td><td><span class="badge act">Active</span></td></tr>
             </tbody>
           </table></div>
           <div class="user-cards">
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Mohammad A.</div><div class="ucard-email">m.ali@acmecorp.com · Iraq</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>26min</strong>listening/day</div><div class="ustat"><strong>2/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>87%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:87%"></div></div></div>
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Mawada E.</div><div class="ucard-email">m.elawad@acmecorp.com · Sudan</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>28min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Abdulaziz A.</div><div class="ucard-email">a.aleisa@acmecorp.com · S. Arabia</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>24min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>72%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:72%"></div></div></div>
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Randa S.</div><div class="ucard-email">r.saleh@acmecorp.com · Jordan</div></div><span class="badge exp">Expired</span></div><div class="ucard-stats"><div class="ustat"><strong>0min</strong>listening/day</div><div class="ustat"><strong>0/3</strong>pathways</div><div class="ustat"><strong>Apr 23</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>0%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:0%"></div></div></div>
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Sara N.</div><div class="ucard-email">s.neimat@acmecorp.com · Jordan</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>30min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
-            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Helen O.</div><div class="ucard-email">h.osama@acmecorp.com · Sudan</div></div><span class="badge pnd">Pending</span></div><div class="ucard-stats"><div class="ustat"><strong>16min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div><div class="ustat"><strong>Sep 22</strong>joined</div></div><div class="ubar-label"><span>Daily progress</span><span>41%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:41%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 34 · Male · Engineering</div><div class="ucard-email">Iraq · 3 therapy sessions</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>26min</strong>listening/day</div><div class="ustat"><strong>2/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>87%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:87%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 29 · Female · HR</div><div class="ucard-email">Sudan · 5 therapy sessions</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>28min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 41 · Male · Finance</div><div class="ucard-email">Saudi Arabia · 1 therapy session</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>24min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>72%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:72%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 26 · Female · Sales</div><div class="ucard-email">Jordan · 0 therapy sessions</div></div><span class="badge exp">Expired</span></div><div class="ucard-stats"><div class="ustat"><strong>0min</strong>listening/day</div><div class="ustat"><strong>0/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>0%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:0%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 38 · Female · Operations</div><div class="ucard-email">Jordan · 7 therapy sessions</div></div><span class="badge act">Active</span></div><div class="ucard-stats"><div class="ustat"><strong>30min</strong>listening/day</div><div class="ustat"><strong>3/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>100%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:100%"></div></div></div>
+            <div class="ucard"><div class="ucard-top"><div><div class="ucard-name">Age 31 · Female · Marketing</div><div class="ucard-email">Sudan · 2 therapy sessions</div></div><span class="badge pnd">Pending</span></div><div class="ucard-stats"><div class="ustat"><strong>16min</strong>listening/day</div><div class="ustat"><strong>1/3</strong>pathways</div></div><div class="ubar-label"><span>Engagement</span><span>41%</span></div><div class="ubar-track"><div class="ubar-fill" style="width:41%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- THERAPY -->
+      <div id="view-therapy" class="view">
+        <div class="kgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div class="kc cy"><div class="kl">Sessions booked</div><div class="kv">148</div><div class="ks">This month</div><div class="kch up">↑ +22 vs last month</div></div>
+          <div class="kc tl"><div class="kl">Unique users</div><div class="kv">87</div><div class="ks">Accessed therapy this month</div><div class="kch up">↑ +11 vs last month</div></div>
+          <div class="kc pu"><div class="kl">Avg. sessions/user</div><div class="kv">1.7</div><div class="ks">Per active therapy user</div><div class="kch up">↑ +0.3 vs last month</div></div>
+          <div class="kc gr"><div class="kl">Avg. satisfaction</div><div class="kv">4.6<span style="font-size:13px;color:var(--txt2)">/5</span></div><div class="ks">Post-session rating</div><div class="kch up">↑ +0.2 vs last month</div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc"><div class="ch"><div><div class="ct">Sessions booked per week</div><div class="cs">Last 8 weeks</div></div></div><div style="position:relative;height:180px"><canvas id="chart-therapy-weekly" role="img" aria-label="Therapy weekly sessions">Growing trend.</canvas></div></div>
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Session type breakdown</div><div class="cs">Share of total sessions this month</div></div></div>
+            <div style="margin-top:6px">
+              <div class="seg-row"><div class="seg-dot" style="background:#06B6D4"></div><div class="seg-label">Individual</div><div class="seg-track"><div class="seg-fill" style="background:#06B6D4;width:64%"></div></div><div class="seg-pct">64%</div><div class="seg-val">95 sessions</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Couples</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:22%"></div></div><div class="seg-pct">22%</div><div class="seg-val">33 sessions</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#10B981"></div><div class="seg-label">Group</div><div class="seg-track"><div class="seg-fill" style="background:#10B981;width:14%"></div></div><div class="seg-pct">14%</div><div class="seg-val">20 sessions</div></div>
+            </div>
+            <div style="margin-top:16px"><div class="ct" style="margin-bottom:10px">Top presenting themes</div>
+              <div class="seg-row"><div class="seg-dot" style="background:#EF4444"></div><div class="seg-label">Work stress</div><div class="seg-track"><div class="seg-fill" style="background:#EF4444;width:74%"></div></div><div class="seg-pct">34%</div><div class="seg-val">50 sess.</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#F59E0B"></div><div class="seg-label">Anxiety</div><div class="seg-track"><div class="seg-fill" style="background:#F59E0B;width:58%"></div></div><div class="seg-pct">27%</div><div class="seg-val">40 sess.</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Relationships</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:41%"></div></div><div class="seg-pct">19%</div><div class="seg-val">28 sess.</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#6B7280"></div><div class="seg-label">Grief / loss</div><div class="seg-track"><div class="seg-fill" style="background:#6B7280;width:26%"></div></div><div class="seg-pct">12%</div><div class="seg-val">18 sess.</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#3AAFA9"></div><div class="seg-label">Other</div><div class="seg-track"><div class="seg-fill" style="background:#3AAFA9;width:17%"></div></div><div class="seg-pct">8%</div><div class="seg-val">12 sess.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crow">
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Department breakdown</div><div class="cs">Sessions consumed by department this month</div></div></div>
+            <div style="position:relative;height:200px"><canvas id="chart-therapy-dept" role="img" aria-label="Therapy sessions by department">Engineering highest.</canvas></div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Top care providers</div><div class="cs">By sessions delivered · this month</div></div></div>
+            <div class="therapist-list">
+              <div class="therapist-row"><div class="th-av" style="background:linear-gradient(135deg,#06B6D4,#0891B2)">LH</div><div style="flex:1;min-width:0"><div class="th-name">Dr. Lina Hassan</div><div class="th-spec">CBT · Anxiety & Stress</div></div><div class="th-stat"><div class="th-sessions">32 sessions</div><div class="th-rating">★ 4.9</div></div></div>
+              <div class="therapist-row"><div class="th-av" style="background:linear-gradient(135deg,#7B6FD0,#534AB7)">KA</div><div style="flex:1;min-width:0"><div class="th-name">Dr. Khalid Al-Amri</div><div class="th-spec">Psychotherapy · Relationships</div></div><div class="th-stat"><div class="th-sessions">28 sessions</div><div class="th-rating">★ 4.8</div></div></div>
+              <div class="therapist-row"><div class="th-av" style="background:linear-gradient(135deg,#10B981,#059669)">NM</div><div style="flex:1;min-width:0"><div class="th-name">Dr. Nour Mansour</div><div class="th-spec">Mindfulness · Grief support</div></div><div class="th-stat"><div class="th-sessions">24 sessions</div><div class="th-rating">★ 4.8</div></div></div>
+              <div class="therapist-row"><div class="th-av" style="background:linear-gradient(135deg,#F59E0B,#D97706)">SA</div><div style="flex:1;min-width:0"><div class="th-name">Dr. Sara Al-Rashid</div><div class="th-spec">Family therapy · Burnout</div></div><div class="th-stat"><div class="th-sessions">19 sessions</div><div class="th-rating">★ 4.7</div></div></div>
+              <div class="therapist-row"><div class="th-av" style="background:linear-gradient(135deg,#EC4899,#BE185D)">OM</div><div style="flex:1;min-width:0"><div class="th-name">Dr. Omar Mahmoud</div><div class="th-spec">Work stress · Performance</div></div><div class="th-stat"><div class="th-sessions">17 sessions</div><div class="th-rating">★ 4.6</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOTLINE -->
+      <div id="view-hotline" class="view">
+        <div class="kgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div class="kc rd"><div class="kl">Total calls</div><div class="kv">312</div><div class="ks">This month</div><div class="kch up">↑ +38 vs last month</div></div>
+          <div class="kc am"><div class="kl">Avg. call duration</div><div class="kv">14.2<span style="font-size:13px;color:var(--txt2)">min</span></div><div class="ks">Per call this month</div><div class="kch dn">↑ +1.4 min vs last month</div></div>
+          <div class="kc gr"><div class="kl">Resolved calls</div><div class="kv">89<span style="font-size:13px;color:var(--txt2)">%</span></div><div class="ks">Resolved without escalation</div><div class="kch up">↑ +2% vs last month</div></div>
+          <div class="kc pu"><div class="kl">Escalations</div><div class="kv">34</div><div class="ks">Referred to care provider</div><div class="kch dn">↑ +4 vs last month</div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc"><div class="ch"><div><div class="ct">Daily call volume</div><div class="cs">Total calls received · last 7 days</div></div></div><div style="position:relative;height:180px"><canvas id="chart-hotline-daily" role="img" aria-label="Hotline daily calls">7-14 calls per day.</canvas></div></div>
+          <div class="cc"><div class="ch"><div><div class="ct">Hourly call pattern</div><div class="cs">Today · calls per hour</div></div></div><div style="position:relative;height:180px"><canvas id="chart-hotline-hourly" role="img" aria-label="Hotline hourly">Evening peak.</canvas></div></div>
+        </div>
+
+        <div class="crow">
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Call severity breakdown</div><div class="cs">Classification by responding agent · this month</div></div></div>
+            <div style="margin-top:4px">
+              <div class="sev-row"><div class="sev-dot" style="background:#10B981"></div><div class="sev-label">Low — general wellbeing</div><div class="sev-bar-wrap"><div class="sev-bar" style="background:#10B981;width:58%"></div></div><div class="sev-count">181</div><div class="sev-pct">58%</div></div>
+              <div class="sev-row"><div class="sev-dot" style="background:#F59E0B"></div><div class="sev-label">Medium — distress</div><div class="sev-bar-wrap"><div class="sev-bar" style="background:#F59E0B;width:28%"></div></div><div class="sev-count">87</div><div class="sev-pct">28%</div></div>
+              <div class="sev-row"><div class="sev-dot" style="background:#EF4444"></div><div class="sev-label">High — acute crisis</div><div class="sev-bar-wrap"><div class="sev-bar" style="background:#EF4444;width:9%"></div></div><div class="sev-count">29</div><div class="sev-pct">9%</div></div>
+              <div class="sev-row"><div class="sev-dot" style="background:#7C3AED"></div><div class="sev-label">Critical — emergency</div><div class="sev-bar-wrap"><div class="sev-bar" style="background:#7C3AED;width:5%"></div></div><div class="sev-count">15</div><div class="sev-pct">5%</div></div>
+            </div>
+            <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr)">
+              <div class="ct" style="margin-bottom:10px">Call themes</div>
+              <div class="seg-row"><div class="seg-dot" style="background:#EF4444"></div><div class="seg-label">Work pressure</div><div class="seg-track"><div class="seg-fill" style="background:#EF4444;width:75%"></div></div><div class="seg-pct">31%</div><div class="seg-val">97 calls</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#F59E0B"></div><div class="seg-label">Anxiety / panic</div><div class="seg-track"><div class="seg-fill" style="background:#F59E0B;width:58%"></div></div><div class="seg-pct">24%</div><div class="seg-val">75 calls</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#7B6FD0"></div><div class="seg-label">Family / relationships</div><div class="seg-track"><div class="seg-fill" style="background:#7B6FD0;width:44%"></div></div><div class="seg-pct">18%</div><div class="seg-val">56 calls</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#6B7280"></div><div class="seg-label">Grief / bereavement</div><div class="seg-track"><div class="seg-fill" style="background:#6B7280;width:27%"></div></div><div class="seg-pct">11%</div><div class="seg-val">34 calls</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#3AAFA9"></div><div class="seg-label">Financial stress</div><div class="seg-track"><div class="seg-fill" style="background:#3AAFA9;width:22%"></div></div><div class="seg-pct">9%</div><div class="seg-val">28 calls</div></div>
+              <div class="seg-row"><div class="seg-dot" style="background:#9CA3AF"></div><div class="seg-label">Other</div><div class="seg-track"><div class="seg-fill" style="background:#9CA3AF;width:17%"></div></div><div class="seg-pct">7%</div><div class="seg-val">22 calls</div></div>
+            </div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div><div class="ct">Calls by department</div><div class="cs">This month · volume per department</div></div></div>
+            <div style="position:relative;height:220px"><canvas id="chart-hotline-dept" role="img" aria-label="Calls by department">Sales highest.</canvas></div>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr)">
+              <div class="ct" style="margin-bottom:10px">Monthly call trend</div>
+              <div style="position:relative;height:120px"><canvas id="chart-hotline-trend" role="img" aria-label="Hotline monthly trend">Growing trend.</canvas></div>
+            </div>
           </div>
         </div>
       </div>
@@ -776,7 +874,19 @@ function toggleLibPlay(){if(libPlaying){clearInterval(libTimer);libPlaying=false
 function seekLib(e){var r=e.currentTarget.getBoundingClientRect();libSecs=Math.round(((e.clientX-r.left)/r.width)*libTotal);document.getElementById('lib-pb-fill').style.width=Math.min(100,(libSecs/libTotal)*100)+'%';document.getElementById('lib-pb-time').textContent=fmtTime(libSecs)+' / '+fmtTime(libTotal);}
 function stopLibPlayer(){clearInterval(libTimer);libPlaying=false;document.getElementById('lib-player-bar').classList.remove('active');if(libCurBtn){libCurBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>';libCurBtn.classList.remove('playing');}libCurBtn=null;libSecs=0;document.getElementById('lib-pb-fill').style.width='0%';}
 
-var pageTitles={analytics:['Analytics overview','Track and manage community wellbeing engagement'],users:['Users','Manage your community members'],pathways:['Pathways','Publish and track learning pathways'],'pathway-detail':['Pathway detail','Day-by-day structure and task breakdown'],programs:['Programs','Manage themed content programs'],'program-detail':['Program detail','Module list and preview'],library:['Content library','Control what your community sees'],team:['Team & access','Manage portal roles'],support:['Support','Get in touch with Tuhoon']};
+var pageTitles={
+  analytics:['Analytics overview','Track and manage community wellbeing engagement'],
+  users:['Users','Anonymised community member data'],
+  therapy:['Therapy sessions','Care provider bookings and outcomes'],
+  hotline:['24/7 Hotline','Call volume, severity and theme analysis'],
+  pathways:['Pathways','Publish and track learning pathways'],
+  'pathway-detail':['Pathway detail','Day-by-day structure and task breakdown'],
+  programs:['Programs','Manage themed content programs'],
+  'program-detail':['Program detail','Module list and preview'],
+  library:['Content library','Control what your community sees'],
+  team:['Team & access','Manage portal roles'],
+  support:['Support','Get in touch with Tuhoon']
+};
 
 function showView(name,navEl){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
@@ -799,7 +909,7 @@ function doLogout(){stopProgPlayer();stopLibPlayer();document.getElementById('da
 var chartsInit=false;
 function initCharts(){
   if(chartsInit)return;chartsInit=true;
-  var teal='#3AAFA9',purple='#7B6FD0';
+  var teal='#3AAFA9',purple='#7B6FD0',green='#10B981',cyan='#06B6D4',red='#EF4444';
   var L7=['Apr 12','Apr 13','Apr 14','Apr 15','Apr 16','Apr 17','Apr 18'];
 
   new Chart(document.getElementById('chart-listen'),{type:'line',data:{labels:L7,datasets:[{label:'min',data:[23,26,22,27,29,25,24],borderColor:teal,backgroundColor:'rgba(58,175,169,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:teal}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{min:15,max:35,grid:{color:'#F3F4F6'},ticks:{font:{size:10},callback:function(v){return v+'m'}}}}}});
@@ -814,7 +924,24 @@ function initCharts(){
   new Chart(document.getElementById('chart-hourly'),{type:'bar',data:{labels:H,datasets:[{label:'min',data:[220,680,1240,1380,820,540,760,680,490,420,510,680,760,880,1180,1420,980,340],backgroundColor:'rgba(123,111,208,0.68)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:45}},y:{grid:{color:'#F3F4F6'},ticks:{font:{size:10},callback:function(v){return v>=1000?(v/1000).toFixed(1)+'k':v}}}}}});
 
   var W8=['7 Feb','14 Feb','21 Feb','28 Feb','7 Mar','14 Mar','21 Mar','28 Mar'];
-  new Chart(document.getElementById('chart-wau'),{type:'line',data:{labels:W8,datasets:[{label:'users',data:[524,558,571,590,614,638,672,697],borderColor:'#10B981',backgroundColor:'rgba(16,185,129,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#10B981'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:480,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+  new Chart(document.getElementById('chart-wau'),{type:'line',data:{labels:W8,datasets:[{label:'users',data:[524,558,571,590,614,638,672,697],borderColor:green,backgroundColor:'rgba(16,185,129,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:green}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:480,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+
+  /* THERAPY */
+  new Chart(document.getElementById('chart-therapy-weekly'),{type:'bar',data:{labels:W8,datasets:[{label:'sessions',data:[14,17,15,19,22,24,21,28],backgroundColor:'rgba(6,182,212,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+
+  var depts=['Engineering','Sales','HR','Finance','Operations','Marketing','Legal'];
+  new Chart(document.getElementById('chart-therapy-dept'),{type:'bar',data:{labels:depts,datasets:[{label:'sessions',data:[38,24,21,18,17,16,14],backgroundColor:'rgba(6,182,212,0.7)',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#F3F4F6'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+  /* HOTLINE */
+  new Chart(document.getElementById('chart-hotline-daily'),{type:'bar',data:{labels:L7,datasets:[{label:'calls',data:[9,12,8,14,11,7,10],backgroundColor:'rgba(239,68,68,0.65)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
+
+  var HH=['6am','8am','10am','12pm','2pm','4pm','6pm','8pm','10pm'];
+  new Chart(document.getElementById('chart-hotline-hourly'),{type:'bar',data:{labels:HH,datasets:[{label:'calls',data:[1,3,4,5,4,6,8,12,7],backgroundColor:'rgba(239,68,68,0.65)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:{size:10},stepSize:2}}}}});
+
+  new Chart(document.getElementById('chart-hotline-dept'),{type:'bar',data:{labels:depts,datasets:[{label:'calls',data:[58,72,41,34,39,48,20],backgroundColor:'rgba(239,68,68,0.65)',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#F3F4F6'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+  var M6=['Nov','Dec','Jan','Feb','Mar','Apr'];
+  new Chart(document.getElementById('chart-hotline-trend'),{type:'line',data:{labels:M6,datasets:[{label:'calls',data:[198,221,244,268,287,312],borderColor:red,backgroundColor:'rgba(239,68,68,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:red}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#F3F4F6'},ticks:{font:{size:10}}}}}});
 }
 </script>
 </body>
